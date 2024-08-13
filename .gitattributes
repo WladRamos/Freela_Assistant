@@ -1,0 +1,2 @@
+AI_Assistant/e62febf9-c5bd-4514-af3b-fdb685d34f26/data_level0.bin filter=lfs diff=lfs merge=lfs -text
+AI_Assistant/chroma.sqlite3 filter=lfs diff=lfs merge=lfs -text
