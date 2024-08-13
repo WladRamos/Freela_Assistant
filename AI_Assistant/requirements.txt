@@ -1,0 +1,4 @@
+chromadb==0.5.5
+Django==5.1
+pandas==2.2.2
+python-dotenv==1.0.1
