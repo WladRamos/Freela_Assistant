@@ -24,10 +24,18 @@ class Command(BaseCommand):
         metadatas = df.to_dict(orient='records')
         ids = df.index.astype(str).tolist()
 
-        collection.add(
-            documents=documents,
-            metadatas=metadatas,
-            ids=ids
-        )
+        for i in range(len(documents)):
+            try:
+                collection.add(
+                    documents=[documents[i]],
+                    metadatas=[metadatas[i]],
+                    ids=[ids[i]]
+                )
+                print(f"Documento {i} adicionado com sucesso.")
+            except Exception as e:
+                print(f"Erro ao adicionar o documento {i}: {e}")
+                print(f"Documento problemático: {documents[i]}")
+                print(f"Metadatas: {metadatas[i]}")
+                print(f"ID: {ids[i]}")
 
         print("Dados inseridos com sucesso no Chroma DB!")
