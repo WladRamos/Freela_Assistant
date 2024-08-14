@@ -1,13 +1,10 @@
 from django.core.management.base import BaseCommand
 import openai
-from langchain_chroma import Chroma
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from dotenv import load_dotenv
 import os
 from pathlib import Path
-from langchain_core.prompts import PromptTemplate
-from langchain_core.prompts.chat import ChatPromptTemplate, HumanMessagePromptTemplate
-
+import chromadb
 
 class Command(BaseCommand):
     help = 'Testa integração do chroma com o gpt'
@@ -20,30 +17,39 @@ class Command(BaseCommand):
         base_dir = Path(__file__).resolve().parent.parent.parent
         caminho_persistent_client = base_dir.parent
 
-        # Configurando embeddings e o vector store
-        embeddings = OpenAIEmbeddings()
-        vectorstore = Chroma(persist_directory=str(caminho_persistent_client), embedding_function=embeddings)
+        # Conectar à coleção existente no Chroma DB
+        client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+        collection = client.get_collection("Base_de_Trabalhos")
 
-        # Criando o retriever a partir do vectorstore
-        retriever = vectorstore.as_retriever()
+        # Configurando embeddings
+        embeddings = OpenAIEmbeddings()
 
         # Configurando o LLM (modelo de linguagem)
         llm = ChatOpenAI(model_name="gpt-4o-mini")
 
         def chatbot(usuario_input):
-            print("Entrei 1")
-            # Recupera documentos relevantes do vector store
-            docs = retriever.invoke(usuario_input)
-            print("Entrei 2")
+            print("Verificando documentos no vector store...")
+
+            # Executa a busca diretamente na coleção
+            results = collection.query(
+                query_texts=[usuario_input],
+                n_results=5  # Especifique quantos resultados você quer retornar
+            )
+            
+            docs = results['documents'][0]  # Acessa a lista de documentos retornada
+            print(f"Documentos encontrados: {len(docs)}")
+            for doc in docs:
+                print(doc)
+
+            if not docs:
+                return "Nenhum documento relevante encontrado."
 
             # Prepara o contexto para o prompt
-            context = "\n\nContexto:\n" + "\n".join([doc.page_content for doc in docs])
+            context = "\n\nContexto:\n" + "\n".join(docs)
             prompt = usuario_input + context
 
             # Gera a resposta usando o contexto recuperado
-            resposta = llm.invoke(prompt)
-            print("Entrei 3")
-
+            resposta = llm(prompt)
             return resposta
 
         # Exemplo de uso
