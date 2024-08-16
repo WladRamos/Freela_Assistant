@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 import openai
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 import os
 from pathlib import Path
@@ -22,6 +22,9 @@ Esse título será Utilizado para fazer uma pesquisa para encontrar trabalhos se
     ```resposta
     Título em Inglês - Título na Língua Original
     ```
+
+    Segue o trabalho que você deverá dar o título:
+    
 """
 
 class Command(BaseCommand):
@@ -29,19 +32,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
+        #Configurando LLM
         load_dotenv()
         openai.api_key = os.getenv("OPENAI_API_KEY")
-
-        base_dir = Path(__file__).resolve().parent.parent.parent
-        caminho_persistent_client = base_dir.parent
-
-        # Conectar à coleção existente no Chroma DB
-        client = chromadb.PersistentClient(path=str(caminho_persistent_client))
-        collection = client.get_collection("Base_de_Trabalhos")
-
-        # Configurando o LLM (modelo de linguagem)
         llm = ChatOpenAI(model_name="gpt-4o-mini")
 
+        # Conectar ao chroma
+        base_dir = Path(__file__).resolve().parent.parent.parent
+        caminho_persistent_client = base_dir.parent
+        client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+        collection = client.get_collection("Base_de_Trabalhos")
+        
         def coleta_titulo(titulo):
             padrao = r'```resposta(.*?)```'
             resultado = re.search(padrao, titulo, re.DOTALL)
@@ -56,12 +57,10 @@ class Command(BaseCommand):
 
             prompt_titulo = PROMPT_QUERY_ANALISE + usuario_input
 
-            titulos = coleta_titulo(llm(prompt_titulo).content).split("-")
-
-            print("Titulo Recebido pela LLM")
-            print(titulos)
+            titulos = coleta_titulo(llm.invoke(prompt_titulo).content).split("-")
 
             for titulo in titulos:
+                titulo = titulo.strip()
                 results = collection.query(
                     query_texts=[titulo],
                     n_results=5
@@ -106,5 +105,4 @@ class Command(BaseCommand):
             Contract-to-hire
             This job has the potential to turn into a full time role
         """
-        resposta = chatbot(usuario_input)
-        print(resposta)
+        chatbot(usuario_input)
