@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 import openai
 from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
 from dotenv import load_dotenv
 import os
 from pathlib import Path
@@ -22,9 +23,26 @@ Esse título será Utilizado para fazer uma pesquisa para encontrar trabalhos se
     ```resposta
     Título em Inglês - Título na Língua Original
     ```
+"""
 
-    Segue o trabalho que você deverá dar o título:
-    
+PROMPT_ANALISE_TRABALHO = """"
+Você será responsável por fazer considerações e recomendações sobre trabalhos freelancers na área da tecnologia.
+Seu papel é ajudar freelancers a fazer melhores escolhas de trabalho e fechar acordos em condições mais favoraveis.
+
+    Instruções:
+
+    1. Você irá receber informações de um trabalho freelancer que o usuário está considerando fazer.
+
+    2. Você terá acesso à informações de 'trabalhos exemplo' realizados na Upwork, que de acordo com um cálculo, são considerados semelhantes ao trabalho que o freelancer irá te enviar.
+
+    3. Você deverá utilizar seu conhecimento, alinhado aos trabalhos exemplo para fazer recomendações ao freelancer. Essas recomendações podem ser tanto financeiras, quanto relacionadas a tempo ou a tecnologias a serem utilizadas. Leve em consideração a dificuldade, quantidade de trabalho e conhecimento exigido.
+
+    4. Cuidado! Pode ocorrer de trabalhos não semelhantes o suficiente serem enviados como trabalhos exemplo para você, baseie-se apenas em trabalhos minimamente semelhantes.
+
+    5. Sinta-se a vontade para fazer as recomendações que quiser ao usuário, mas caso junto ao trabalho que receber, tenha alguma dúvida específica do usuário, responda-a primeiro.
+
+    Trabalhos exemplo:
+    {trabalhos_exemplo}
 """
 
 class Command(BaseCommand):
@@ -86,34 +104,33 @@ class Command(BaseCommand):
 
         # Exemplo de uso
         usuario_input = """
-            SMS with link shortening + Linux Admin
-            Posted 5 minutes ago
+            HTML / CSS Specialist for Marketing Website
+            Posted 51 seconds ago
             Worldwide
-            Im looking to create a simple system for now. The simple system will be sending and receiving SMS messages and using our own(that you need to create) link shortening service.
+            I am looking for a person to assist with building my personal website.
 
-            I noticed that backend devs are usually not so good wit front-end and thats fine ill get a designer and front-end developer separately.
+            $100.00
 
-            For backend i prefer if you know basic Linux administration, DB administration,.
-
-            Bonus if you have experience with GSM Modems or SMS API.
-
-
-
-            More than 30 hrs/week
-            Hourly
+            Fixed-price
             Intermediate
             Experience Level
-            $20.00-$45.00 Hourly
             Remote Job
-            Ongoing project
+            One-time project
             Project Type
-            Contract-to-hire
-            This job has the potential to turn into a full time role
+            Skills and Expertise
+            HTML
+            CSS
+            Landing Page
+            Web Development
         """
 
-        prompt_titulo = PROMPT_QUERY_ANALISE + usuario_input
+        prompt_titulo = ChatPromptTemplate.from_messages([("system", PROMPT_QUERY_ANALISE), ("user", "Segue o trabalho que você deverá dar o título:\n {trabalho}")])
+    
+        chain_titulo = prompt_titulo | llm
 
-        titulos = coleta_titulo(llm.invoke(prompt_titulo).content).split("-")
+        titulos = coleta_titulo(chain_titulo.invoke({"trabalho": usuario_input}).content).split("-")
+
+        trabalhos_exemplo = ""
 
         for titulo in titulos:
             titulo = titulo.strip()
@@ -124,5 +141,12 @@ class Command(BaseCommand):
             trabalhos = results['metadatas'][0]
 
             for trab in trabalhos:
-                print(formatar_info_trabalho(trab))
-        
+                trabalhos_exemplo += formatar_info_trabalho(trab)
+
+        prompt_analise = ChatPromptTemplate.from_messages([("system", PROMPT_ANALISE_TRABALHO), ("user", "Segue a entrada do usuário: \n {trabalho}")])
+
+        chain_analise = prompt_analise | llm
+
+        analise = chain_analise.invoke({"trabalhos_exemplo": trabalhos_exemplo, "trabalho": usuario_input})
+        print(analise)
+        #print(llm.invoke(PROMPT_ANALISE_TRABALHO).content)
