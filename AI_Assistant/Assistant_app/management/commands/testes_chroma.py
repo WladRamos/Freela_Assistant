@@ -43,6 +43,37 @@ class Command(BaseCommand):
         client = chromadb.PersistentClient(path=str(caminho_persistent_client))
         collection = client.get_collection("Base_de_Trabalhos")
         
+        def formatar_info_trabalho(job_dict):
+            job_info = "-" * 80
+            job_info += "\n"
+            job_info += f"Job Title: {job_dict.get('Job Title', 'N/A')}\n"
+            
+            job_info += f"Search Keyword: {job_dict.get('Search_Keyword', 'N/A')}\n"
+            
+            for i in range(1, 10):
+                category_key = f'Category_{i}'
+                if job_dict.get(category_key):
+                    job_info += f"{category_key}: {job_dict[category_key]} "
+            
+            job_info += "\n"
+            
+            if 'EX_level_demand' in job_dict:
+                job_info += f"Experience Level: {job_dict['EX_level_demand']}\n"
+                
+            job_info += f"Payment Type: {job_dict.get('Payment_type', 'N/A')}\n"
+            
+            if job_dict.get('Payment_type') == 'Fixed-price':
+                job_info += f"Cost: {job_dict.get('Job_Cost', 'N/A')}\n"
+            elif job_dict.get('Payment_type') == 'Hourly':
+                job_info += f"Hourly Rate: {job_dict.get('Hourly_Rate', 'N/A')}\n"
+
+            job_info += f"Description: {job_dict.get('Description', 'N/A')}\n"
+
+            job_info += "-" * 80
+
+            return job_info
+        
+
         def coleta_titulo(titulo):
             padrao = r'```resposta(.*?)```'
             resultado = re.search(padrao, titulo, re.DOTALL)
@@ -52,32 +83,6 @@ class Command(BaseCommand):
             else:
                 return titulo
 
-
-        def chatbot(usuario_input):
-
-            prompt_titulo = PROMPT_QUERY_ANALISE + usuario_input
-
-            titulos = coleta_titulo(llm.invoke(prompt_titulo).content).split("-")
-
-            for titulo in titulos:
-                titulo = titulo.strip()
-                results = collection.query(
-                    query_texts=[titulo],
-                    n_results=5
-                )
-                docs = results # Acessa a lista de documentos retornada
-                print(docs)
-
-                if not docs:
-                    return "Nenhum documento relevante encontrado."
-
-            # Prepara o contexto para o prompt
-            #context = "\n\nContexto:\n" + "\n".join(docs)
-            #prompt = usuario_input + context
-
-            # Gera a resposta usando o contexto recuperado
-            #resposta = llm(prompt)
-            #return resposta
 
         # Exemplo de uso
         usuario_input = """
@@ -105,4 +110,19 @@ class Command(BaseCommand):
             Contract-to-hire
             This job has the potential to turn into a full time role
         """
-        chatbot(usuario_input)
+
+        prompt_titulo = PROMPT_QUERY_ANALISE + usuario_input
+
+        titulos = coleta_titulo(llm.invoke(prompt_titulo).content).split("-")
+
+        for titulo in titulos:
+            titulo = titulo.strip()
+            results = collection.query(
+                query_texts=[titulo],
+                n_results=5
+            )
+            trabalhos = results['metadatas'][0]
+
+            for trab in trabalhos:
+                print(formatar_info_trabalho(trab))
+        
