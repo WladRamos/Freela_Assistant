@@ -39,7 +39,12 @@ Seu papel é ajudar freelancers a fazer melhores escolhas de trabalho e fechar a
 
     4. Cuidado! Pode ocorrer de trabalhos não semelhantes o suficiente serem enviados como trabalhos exemplo para você, baseie-se apenas em trabalhos minimamente semelhantes.
 
-    5. Sinta-se a vontade para fazer as recomendações que quiser ao usuário, mas caso junto ao trabalho que receber, tenha alguma dúvida específica do usuário, responda-a primeiro.
+    5. Seja objetivo nas suas recomendações, apenas fale sobre o que você tem recomendações a fazer.
+
+    6. Sinta-se a vontade para fazer as recomendações que quiser ao usuário, mas caso junto ao trabalho que receber, tenha alguma dúvida específica do usuário, responda-a primeiro.
+
+    Observação: Os trabalhos exemplo estão encapsulados dentro do sistema, e o usuário não possui acesso, por isso, não cite esses trabalhos na sua resposta. Se desejar você pode usar simplesmente 'de acordo com a minha base de dados interna'.
+    Observação: Tome cuidado com a diferença entre trabalhos de preço fixo e trabalhos pagos por hora, quando compara-los, não ache que uma pessoa que ganha $100 fixos está ganhando mais do que quem ganha $70 por hora, por exemplo.
 
     Trabalhos exemplo:
     {trabalhos_exemplo}
@@ -108,15 +113,16 @@ class Command(BaseCommand):
             Posted 51 seconds ago
             Worldwide
             I am looking for a person to assist with building my personal website.
+            I have 4 pages in mind, and would like an Specialist to this job.
 
-            $100.00
+            $50.00
 
             Fixed-price
             Intermediate
             Experience Level
             Remote Job
             One-time project
-            Project Type
+            
             Skills and Expertise
             HTML
             CSS
@@ -136,12 +142,14 @@ class Command(BaseCommand):
             titulo = titulo.strip()
             results = collection.query(
                 query_texts=[titulo],
-                n_results=5
+                n_results=10
             )
             trabalhos = results['metadatas'][0]
 
             for trab in trabalhos:
                 trabalhos_exemplo += formatar_info_trabalho(trab)
+
+        print(trabalhos_exemplo)
 
         prompt_analise = ChatPromptTemplate.from_messages([("system", PROMPT_ANALISE_TRABALHO), ("user", "Segue a entrada do usuário: \n {trabalho}")])
 
