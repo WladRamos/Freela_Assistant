@@ -1,7 +1,5 @@
 /.venv
 /.vscode
 /.env
-/AI_Assistant/Assistant_app/__pycache__
-/AI_Assistant/Assistant_app/management/__pycache__
-/AI_Assistant/Assistant_app/management/commands/__pycache__
 /.DS_Store
+**/__pycache__/*.pyc
