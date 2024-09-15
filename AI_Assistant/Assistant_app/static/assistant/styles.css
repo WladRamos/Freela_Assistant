@@ -1,0 +1,121 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 15px;
+    text-align: right;
+}
+
+header nav a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+}
+
+main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+.input-area {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.input-container {
+    width: 100%;
+    max-width: 60%; /* Aplicar o mesmo estilo de porcentagem para a área de input */
+    display: flex;
+    align-items: center;
+    position: relative;
+    margin: 0 auto; /* Centraliza a área de input */
+}
+
+textarea {
+    width: 100%;
+    min-height: 50px;
+    max-height: 150px; /* Limite máximo da altura */
+    padding: 10px;
+    padding-right: 40px; /* Espaço para o botão */
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    outline: none;
+    resize: none;  /* Impedir redimensionamento manual */
+    overflow-y: auto; /* Permitir rolagem vertical após o limite */
+}
+
+textarea:focus {
+    border-color: #4CAF50;
+}
+
+.send-button {
+    position: absolute;
+    right: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.send-button:hover {
+    background-color: #45a049;
+}
+
+.message-area {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+    max-width: 70%; /* Define o tamanho máximo relativo à largura da tela */
+    margin: 0 auto; /* Centraliza a área de mensagens */
+    width: 100%; /* Permite que o elemento ocupe 100% da largura do contêiner até o limite do max-width */
+}
+
+.message-box {
+    padding: 10px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+    max-width: 70%;
+}
+
+.message-user {
+    background-color: #4CAF50;
+    color: white;
+    align-self: flex-end;
+}
+
+.message-response {
+    background-color: #e0e0e0;
+    color: black;
+    align-self: flex-start;
+}
+
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+}

@@ -1,0 +1,64 @@
+document.addEventListener('DOMContentLoaded', function(){
+    // Função para adicionar uma mensagem à área de mensagens
+    function addMessage(content, className) {
+        const messageArea = document.getElementById('message-area');
+        const messageBox = document.createElement('div');
+        messageBox.classList.add('message-box', className);
+        messageBox.textContent = content;
+        messageArea.appendChild(messageBox);
+
+        // Rolar para o final da área de mensagens
+        messageArea.scrollTop = messageArea.scrollHeight;
+    }
+
+    // Função para enviar mensagem com fetch
+    function sendMessage() {
+        const message = document.getElementById('message-input').value;
+        const csrftoken = getCookie('csrftoken'); // Obter o token CSRF
+
+        if (message.trim()) {
+            // Exibe a mensagem do usuário na área de diálogo
+            addMessage(message, 'message-user');
+
+            fetch('/api/chat_llm', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken,  // Adicionar o token CSRF no cabeçalho
+                },
+                body: JSON.stringify({ message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Exibe a resposta do servidor na área de diálogo
+                addMessage(data.response, 'message-response');
+                
+                // Limpar campo de texto e resetar altura
+                document.getElementById('message-input').value = '';
+                document.getElementById('message-input').style.height = '50px';
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+            });
+        }
+    }
+
+    // Enviar mensagem ao apertar o botão de enviar
+    document.querySelector('.send-button').addEventListener('click', sendMessage);
+    // Enviar mensagem ao apertar Enter
+    document.getElementById('message-input').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter' && !event.shiftKey) {  // Evitar envio se Shift+Enter for pressionado
+            event.preventDefault();  // Evitar quebra de linha ao apertar Enter
+            sendMessage();  // Chamar a função de enviar
+        }
+    });
+
+    function adjustTextarea() {
+        const textarea = document.getElementById('message-input');
+        textarea.style.height = 'auto'; // Resetar a altura para recalcular
+        textarea.style.height = `${textarea.scrollHeight}px`; // Ajustar com base na altura do conteúdo
+    }
+    
+    // Ajustar textarea conforme o usuário digita
+    document.getElementById('message-input').addEventListener('input', adjustTextarea);
+})

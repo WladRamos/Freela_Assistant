@@ -1,0 +1,58 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelancer Assistant</title>
+    <link rel="stylesheet" href="{% static 'assistant/styles.css' %}">
+    <script>
+        // Função para obter o CSRF token dos cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</head>
+<body>
+
+<header>
+    <nav>
+        <a href="#">Perfil</a>
+        <a href="#">Logout</a>
+    </nav>
+</header>
+
+<main>
+    <!-- Área onde as mensagens serão exibidas -->
+    <div class="message-area" id="message-area">
+        <!-- As mensagens serão inseridas dinamicamente aqui -->
+    </div>
+
+    <!-- Espaço para o input -->
+    <div class="input-area">
+        <div class="input-container">
+            <textarea id="message-input" placeholder="Digite sua mensagem..."></textarea>
+            <button type="submit" class="send-button">&#10148;</button>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>&copy; 2024 Freelancer Assistant. Todos os direitos reservados.</p>
+</footer>
+
+<script src="{% static 'assistant/scripts.js' %}"></script>
+</body>
+</html>
