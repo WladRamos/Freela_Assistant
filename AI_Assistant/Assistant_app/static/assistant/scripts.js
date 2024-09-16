@@ -8,7 +8,9 @@ document.addEventListener('DOMContentLoaded', function(){
         messageArea.appendChild(messageBox);
 
         // Rolar para o final da área de mensagens
-        messageArea.scrollTop = messageArea.scrollHeight;
+        setTimeout(() => {
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }, 0);
     }
 
     // Função para enviar mensagem com fetch
@@ -55,8 +57,20 @@ document.addEventListener('DOMContentLoaded', function(){
 
     function adjustTextarea() {
         const textarea = document.getElementById('message-input');
-        textarea.style.height = 'auto'; // Resetar a altura para recalcular
-        textarea.style.height = `${textarea.scrollHeight}px`; // Ajustar com base na altura do conteúdo
+        
+        // Guardar o valor do padding para considerar no cálculo da altura
+        const computedStyle = window.getComputedStyle(textarea);
+        const paddingTop = parseFloat(computedStyle.paddingTop);
+        const paddingBottom = parseFloat(computedStyle.paddingBottom);
+    
+        // Resetar a altura para o mínimo, ignorando a altura atual
+        textarea.style.height = 'auto';
+    
+        // Calcular a altura real levando em consideração o padding
+        const newHeight = textarea.scrollHeight - paddingTop - paddingBottom;
+    
+        // Aplicar a nova altura com limite máximo de 150px
+        textarea.style.height = `${Math.min(newHeight, 150)}px`;
     }
     
     // Ajustar textarea conforme o usuário digita

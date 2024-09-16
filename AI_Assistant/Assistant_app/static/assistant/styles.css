@@ -32,6 +32,11 @@ main {
     display: flex;
     justify-content: center;
     width: 100%;
+    position: fixed; /* Fixa a área de input na parte inferior */
+    bottom: 0; /* Gruda no rodapé da tela */
+    left: 0;
+    background-color: white; /* Adiciona fundo para destacar o input */
+    padding: 10px 0; /* Adiciona espaçamento entre o input e as bordas */
 }
 
 .input-container {
@@ -82,14 +87,17 @@ textarea:focus {
 .message-area {
     flex-grow: 1;
     padding: 10px;
-    overflow-y: auto;
+    overflow-y: auto; /* Permite rolagem vertical */
     display: flex;
     flex-direction: column;
     gap: 10px;
     align-items: center;
-    max-width: 70%; /* Define o tamanho máximo relativo à largura da tela */
-    margin: 0 auto; /* Centraliza a área de mensagens */
-    width: 100%; /* Permite que o elemento ocupe 100% da largura do contêiner até o limite do max-width */
+    max-width: 70%;
+    margin: 0 auto;
+    width: 100%;
+    height: calc(100vh - 150px); /* Altura fixa que permite espaço para a input-area */
+    box-sizing: border-box;
+    padding-bottom: 100px; /* Adiciona espaço na parte inferior para a input-area */
 }
 
 .message-box {
@@ -112,10 +120,20 @@ textarea:focus {
     align-self: flex-start;
 }
 
+/* Estilização da barra de rolagem */
+.message-area::-webkit-scrollbar {
+    width: 5px; /* Deixa a barra de rolagem mais fina */
+}
 
-footer {
-    background-color: #333;
-    color: white;
-    text-align: center;
-    padding: 10px;
+.message-area::-webkit-scrollbar-track {
+    background: transparent; /* Faz com que o fundo da barra de rolagem seja invisível */
+}
+
+.message-area::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* Deixa a barra de rolagem mais discreta */
+    border-radius: 10px; /* Bordas arredondadas para um design mais suave */
+}
+
+.message-area::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.4); /* Torna a barra de rolagem um pouco mais visível ao passar o mouse */
 }
