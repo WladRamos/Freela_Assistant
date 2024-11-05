@@ -17,7 +17,7 @@ def chat_llm(request):
 
         if router_decision == "search_jobs":
             response = 'search_jobs...'
-            jobs = JobFetcher(filters=["python", "developer"])
+            jobs = JobFetcher()
             print(jobs.get_jobs_str())
         elif router_decision == "analyze_job":
             response = 'analyze_job...'

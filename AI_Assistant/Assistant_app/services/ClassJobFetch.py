@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 import re
 
 class JobFetcher:
-    def __init__(self, filters: list[str]) -> None:
+    def __init__(self, filters: list[str] = []) -> None:
         self.__all_jobs_str = ""
         self.filters = filters
         self.__fetch_jobs()
@@ -15,21 +15,25 @@ class JobFetcher:
     def __fetch_jobs(self) -> None:
 
         flmap_jobs = self.__clean_job_descriptions(Freelancermap.parse_feeds())
-        flmap_jobs = self.__job_filter(flmap_jobs, self.filters)
+        if len(self.filters) > 0:
+            flmap_jobs = self.__job_filter(flmap_jobs, self.filters)
         self.__all_jobs_str += self.write_jobs_str(flmap_jobs, "Freelancermap.com")
 
         remotive_jobs = self.__clean_job_descriptions(Remotive.parse_feeds())
-        remotive_jobs = self.__job_filter(remotive_jobs, self.filters)
+        if len(self.filters) > 0:
+            remotive_jobs = self.__job_filter(remotive_jobs, self.filters)
         self.__all_jobs_str += self.write_jobs_str(remotive_jobs, "Remotive.com")
 
         freelcom = Freelancercom(query=' '.join(self.filters))
         freelcom_jobs = freelcom.get_jobs()
-        freelcom_jobs = self.__job_filter(freelcom_jobs, self.filters)
+        if len(self.filters) > 0:
+            freelcom_jobs = self.__job_filter(freelcom_jobs, self.filters)
         self.__all_jobs_str += self.write_jobs_str(freelcom_jobs, "Freelancer.com")
 
         guru = Guru()
         guru_jobs = guru.get_jobs()
-        guru_jobs = self.__job_filter(guru_jobs, self.filters)
+        if len(self.filters) > 0:
+            guru_jobs = self.__job_filter(guru_jobs, self.filters)
         self.__all_jobs_str += self.write_jobs_str(guru_jobs, "Guru.com")
         
 
