@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from Assistant_app.services.router import get_router_decision
+from Assistant_app.services.ClassJobFetch import JobFetcher
 import json
 
 def index(request):
@@ -16,6 +17,8 @@ def chat_llm(request):
 
         if router_decision == "search_jobs":
             response = 'search_jobs...'
+            jobs = JobFetcher(filters=["python", "developer"])
+            print(jobs.get_jobs_str())
         elif router_decision == "analyze_job":
             response = 'analyze_job...'
         elif router_decision == "freelancing_tips":
