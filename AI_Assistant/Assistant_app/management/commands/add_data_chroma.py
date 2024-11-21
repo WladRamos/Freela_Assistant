@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
         base_dir = Path(__file__).resolve().parent.parent.parent
 
-        caminho_csv = base_dir / 'dados/dados_tratados.csv'
+        caminho_csv = base_dir / 'dados/dados_3plataformas.csv'
 
         caminho_persistent_client = base_dir.parent
 
