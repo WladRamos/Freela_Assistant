@@ -4,10 +4,12 @@ document.addEventListener('DOMContentLoaded', function(){
         const messageArea = document.getElementById('message-area');
         const messageBox = document.createElement('div');
         messageBox.classList.add('message-box', className);
-        messageBox.textContent = content;
+    
+        // Converter Markdown para HTML e sanitizar com DOMPurify
+        messageBox.innerHTML = DOMPurify.sanitize(marked.parse(content));
+    
         messageArea.appendChild(messageBox);
-
-        // Rolar para o final da área de mensagens
+    
         setTimeout(() => {
             messageArea.scrollTop = messageArea.scrollHeight;
         }, 0);
