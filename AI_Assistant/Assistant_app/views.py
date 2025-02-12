@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from Assistant_app.services.router import get_router_decision
 from Assistant_app.services.ClassJobFetch import JobFetcher
-from Assistant_app.services.llmSearchJobs import get_llm_response
+from Assistant_app.services.llmSearchJobs import get_llm_response_search
+from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
 import json
 
 def index(request):
@@ -16,15 +17,27 @@ def chat_llm(request):
 
         router_decision = get_router_decision(user_message)
 
+        #Busca de trabalhos
         if router_decision == "search_jobs":
             jobs = JobFetcher()
             jobs_str = jobs.get_jobs_str()
             if jobs_str:
-                response = get_llm_response(user_message, jobs.get_jobs_str(), None) # add user info
+                response = get_llm_response_search(user_message, jobs.get_jobs_str(), None) # add user info
+                if not response:
+                    response = 'Não foi possivel encontrar trabalhos no momento.'
+            else:
+                response = 'Não foi possivel encontrar trabalhos no momento.'
+
+        #Análise de trabalho
         elif router_decision == "analyze_job":
-            response = 'analyze_job...'
+            response = get_llm_response_analyze(user_message, None) # add user info
+            if not response:
+                response = 'Não foi possivel analisar o trabalho no momento.'
+
+        #Dicas de freelancing/programação
         elif router_decision == "freelancing_tips":
             response = 'freelancing_tips...'
+        
         else:
             response = 'other'
 

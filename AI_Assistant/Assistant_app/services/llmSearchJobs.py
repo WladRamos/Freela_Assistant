@@ -14,7 +14,7 @@ Liste na resposta apenas os trabalhos que fazem sentido com o seu pedido e/ou in
 Escreva sua resposta em markdown.
 """
 
-def get_llm_response(user_message, jobs_found, user_info):
+def get_llm_response_search(user_message, jobs_found, user_info):
     """Function to determine the response based on the user query and user personal information."""
     prompt = f"System: {system}\n\nHuman: {user_message}\n\nUser info: {user_info}\n\nJobs found: {jobs_found}"
     response = llm.invoke(input=prompt)
