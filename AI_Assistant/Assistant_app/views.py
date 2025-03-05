@@ -4,6 +4,7 @@ from Assistant_app.services.router import get_router_decision
 from Assistant_app.services.ClassJobFetch import JobFetcher
 from Assistant_app.services.llmSearchJobs import get_llm_response_search
 from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
+from Assistant_app.services.llmTips import answer_user_question
 import json
 
 def index(request):
@@ -36,12 +37,13 @@ def chat_llm(request):
 
         #Dicas de freelancing/programação
         elif router_decision == "freelancing_tips":
-            response = 'freelancing_tips...'
+            response = answer_user_question(user_message)
+            if not response:
+                response = 'Não foi possivel encontrar dicas no momento.'
         
         else:
-            response = 'other'
+            response = "Esta pergunta não está incluida no escopo do assistente."
 
-        
         return JsonResponse({"response": response}, status =200)
     else:
         return JsonResponse({"error": "Post not found."}, status=404)
