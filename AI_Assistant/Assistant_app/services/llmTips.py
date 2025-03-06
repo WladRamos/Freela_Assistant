@@ -121,8 +121,3 @@ def answer_user_question(user_question):
     final_answer = generate_final_answer(user_question, search_context)
     
     return final_answer
-
-# Exemplo de uso
-# user_question = "Quais são os melhores sites para freelancers conseguirem trabalho?"
-# response = answer_user_question(user_question)
-# print(response)
