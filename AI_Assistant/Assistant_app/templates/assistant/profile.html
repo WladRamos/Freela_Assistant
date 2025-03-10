@@ -1,0 +1,9 @@
+{% extends "assistant/layout.html" %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+        <h1>Olá, {{ user.username }}</h1>
+    {% else %}
+        <h1>Você precisa estar logado para acessar esta página.</h1>
+    {% endif %}
+{% endblock %}

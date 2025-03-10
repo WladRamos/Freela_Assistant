@@ -64,6 +64,9 @@ def register(request):
 
 def index(request):
     return render(request, "assistant/index.html")
+
+def profile(request):
+    return render(request, "assistant/profile.html")
     
 def chat_llm(request):
     if request.method == "POST":
@@ -75,7 +78,7 @@ def chat_llm(request):
 
         #Busca de trabalhos
         if router_decision == "search_jobs":
-            jobs = JobFetcher()
+            jobs = JobFetcher() #começar a usar filtros
             jobs_str = jobs.get_jobs_str()
             if jobs_str:
                 response = get_llm_response_search(user_message, jobs.get_jobs_str(), None) # add user info
