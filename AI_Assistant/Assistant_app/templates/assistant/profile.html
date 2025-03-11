@@ -1,8 +1,52 @@
 {% extends "assistant/layout.html" %}
+{% load static %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'assistant/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'assistant/profile.css' %}">
+{% endblock %}
 
 {% block content %}
     {% if user.is_authenticated %}
-        <h1>Olá, {{ user.username }}</h1>
+        <div class="profile-container">
+            <div class="profile-header">
+                <img src="{% static 'assistant/images/user-icon.png' %}" alt="User Icon" class="user-icon">
+                <h1>Perfil</h1>
+            </div>
+            
+            <section class="profile-section">
+                <h2>Histórico de trabalhos</h2>
+                <div class="profile-box">
+                    {% for projeto in user.projetos.all %}
+                        <p>{{ projeto.titulo }}</p>
+                    {% empty %}
+                        <p>Nenhum trabalho cadastrado.</p>
+                    {% endfor %}
+                    <span class="edit-icon">✏️</span>
+                </div>
+            </section>
+            
+            <section class="profile-section">
+                <h2>Preferências de Preços</h2>
+                <div class="profile-box">
+                    <p>Preço Fixo: <input type="text" value="${{ user.preco_fixo_min }}" readonly></p>
+                    <p>Preço por hora: <input type="text" value="${{ user.preco_hora_min }}" readonly></p>
+                    <span class="edit-icon">✏️</span>
+                </div>
+            </section>
+            
+            <section class="profile-section">
+                <h2>Habilidades</h2>
+                <div class="profile-box skills">
+                    {% for habilidade in user.habilidades.all %}
+                        <span class="skill-tag">{{ habilidade.habilidade.nome }}</span>
+                    {% empty %}
+                        <p>Nenhuma habilidade cadastrada.</p>
+                    {% endfor %}
+                    <span class="edit-icon">✏️</span>
+                </div>
+            </section>
+        </div>
     {% else %}
         <h1>Você precisa estar logado para acessar esta página.</h1>
     {% endif %}
