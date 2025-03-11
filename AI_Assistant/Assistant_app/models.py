@@ -48,6 +48,9 @@ class UsuarioHabilidade(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='habilidades')
     habilidade = models.ForeignKey(Habilidade, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.usuario.username} - {self.habilidade.nome}"
+
 class ProjetoHistorico(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='projetos')
     titulo = models.CharField(max_length=255)
