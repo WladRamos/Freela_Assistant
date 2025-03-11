@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+import unicodedata
 
 class TipoUsuario(models.TextChoices):
     ADMINISTRADOR = "Administrador"
@@ -29,7 +30,19 @@ class RespostaAssistente(models.Model):
     data = models.DateTimeField(auto_now_add=True)
 
 class Habilidade(models.Model):
-    nome = models.CharField(max_length=100)
+    nome = models.CharField(max_length=100, unique=True)
+
+    def save(self, *args, **kwargs):
+        self.nome = self.normalizar_nome(self.nome)
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def normalizar_nome(nome):
+        nome = unicodedata.normalize('NFKD', nome).encode('ASCII', 'ignore').decode('utf-8')
+        return nome.upper()
+
+    def __str__(self):
+        return self.nome
 
 class UsuarioHabilidade(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='habilidades')
