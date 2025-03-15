@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     let trabalhos = [];
+    let habilidades = new Set();
 
     // Função para abrir o modal para adicionar um novo trabalho
     document.getElementById("add-work").addEventListener("click", function () {
@@ -81,5 +82,46 @@ document.addEventListener("DOMContentLoaded", function () {
         closeBtn.addEventListener("click", function () {
             this.parentElement.parentElement.classList.add("hidden");
         });
+    });
+
+    // Função para abrir o modal de adicionar habilidades
+    document.getElementById("add-skill").addEventListener("click", function () {
+        document.getElementById("new-skill").value = "";
+        document.getElementById("skill-modal").classList.remove("hidden");
+    });
+
+    // Fechar os modais ao clicar no botão de fechar (X)
+    document.querySelectorAll(".close").forEach(closeBtn => {
+        closeBtn.addEventListener("click", function () {
+            this.parentElement.parentElement.classList.add("hidden");
+        });
+    });
+
+    // Função para adicionar nova habilidade ao front-end
+    document.getElementById("save-skill").addEventListener("click", function () {
+        let skillName = document.getElementById("new-skill").value.trim().toUpperCase();
+        
+        if (skillName) {
+            // Criar um novo elemento para a habilidade
+            const skillTag = document.createElement("span");
+            skillTag.className = "skill-tag";
+            skillTag.innerHTML = `${skillName} <span class="remove-skill">x</span>`;
+    
+            // Inserir a nova skill ANTES do botão "+"
+            const skillsContainer = document.querySelector(".skills");
+            const addSkillButton = document.getElementById("add-skill");
+            skillsContainer.insertBefore(skillTag, addSkillButton);
+    
+            // Limpar o campo de entrada e fechar o modal
+            document.getElementById("new-skill").value = "";
+            document.getElementById("skill-modal").classList.add("hidden");
+        }
+    });
+
+    // Remover habilidades da interface ao clicar no "x"
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("remove-skill")) {
+            event.target.parentElement.remove();
+        }
     });
 });

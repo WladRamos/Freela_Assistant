@@ -45,6 +45,7 @@ input[readonly] {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
+    align-items: center;
 }
 
 .skill-tag {
@@ -127,4 +128,21 @@ input[readonly] {
     margin-top: 5px;
     border-radius: 5px;
     border: 1px solid #ccc;
+}
+
+#save-skill {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#save-skill:hover {
+    background-color: #45a049;
+}
+
+#add-skill {
+    order: 2; /* Mantém o botão sempre no final */
 }
