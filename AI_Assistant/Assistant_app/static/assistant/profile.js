@@ -1,7 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
     let trabalhos = [];
 
-    // Modal de edição de trabalho
+    // Função para abrir o modal para adicionar um novo trabalho
+    document.getElementById("add-work").addEventListener("click", function () {
+        document.getElementById("work-id").value = "";
+        document.getElementById("work-title").value = "";
+        document.getElementById("work-description").value = "";
+        document.getElementById("work-payment").value = "Hora";
+        document.getElementById("work-value").value = "";
+        document.getElementById("work-skills").innerHTML = "";
+
+        document.getElementById("work-modal-title").innerText = "Adicionar Trabalho";
+        document.getElementById("work-modal").classList.remove("hidden");
+    });
+
+    // Modal de edição de trabalho existente
     document.querySelectorAll(".work-title").forEach(item => {
         item.addEventListener("click", function () {
             const workId = this.dataset.id;
@@ -26,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         habilidadesContainer.appendChild(skillTag);
                     });
 
+                    document.getElementById("work-modal-title").innerText = "Editar Trabalho";
                     document.getElementById("work-modal").classList.remove("hidden");
                 })
                 .catch(error => console.error("Erro ao buscar trabalho:", error));
