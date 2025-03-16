@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Salvar nova habilidade no banco ao confirmar no modal
     document.getElementById("save-skill").addEventListener("click", function () {
         let skillName = document.getElementById("new-skill").value.trim().toUpperCase();
-        
+    
         if (skillName) {
             fetch("/adicionar_habilidade/", {
                 method: "POST",
@@ -165,15 +165,25 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
+                    const skillsContainer = document.querySelector(".skills");
+                    const addSkillButton = document.getElementById("add-skill");
+    
+                    // **🔹 REMOVEMOS a mensagem "Nenhuma habilidade cadastrada" se ainda estiver lá **
+                    let noSkillsMessage = document.querySelector(".skills p");
+                    if (noSkillsMessage) {
+                        noSkillsMessage.remove();
+                    }
+    
+                    // Criar elemento para a nova habilidade
                     const skillTag = document.createElement("span");
                     skillTag.className = "skill-tag";
                     skillTag.dataset.id = data.habilidade_id;
                     skillTag.innerHTML = `${skillName} <span class="remove-skill">x</span>`;
-
-                    const skillsContainer = document.querySelector(".skills");
-                    const addSkillButton = document.getElementById("add-skill");
+    
+                    // Adicionar antes do botão "+"
                     skillsContainer.insertBefore(skillTag, addSkillButton);
-
+    
+                    // Fechar modal
                     document.getElementById("new-skill").value = "";
                     document.getElementById("skill-modal").classList.add("hidden");
                 } else {
