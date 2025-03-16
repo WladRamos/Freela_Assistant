@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("add-work").addEventListener("click", function () {
         limparCamposTrabalho();
         document.getElementById("work-modal-title").innerText = "Adicionar Trabalho";
+        document.getElementById("delete-work").classList.add("hidden"); // Oculta o botão de excluir
         document.getElementById("work-modal").classList.remove("hidden");
     });
 
@@ -33,6 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
 
                     document.getElementById("work-modal-title").innerText = "Editar Trabalho";
+                    document.getElementById("delete-work").classList.remove("hidden"); // Exibe o botão de excluir
                     document.getElementById("work-modal").classList.remove("hidden");
                 })
                 .catch(error => console.error("Erro ao buscar trabalho:", error));
@@ -48,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
             tipo_pagamento: document.getElementById("work-payment").value,
             valor_pagamento: document.getElementById("work-value").value,
             habilidades: Array.from(document.querySelectorAll("#work-skills .skill-tag")).map(skill => ({
-                id: skill.dataset.id,
+                id: skill.dataset.id || null,
                 nome: skill.textContent.replace(" x", "").trim()
             }))
         };
@@ -65,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             if (data.success) {
                 alert("Trabalho salvo com sucesso!");
-                location.reload(); // Recarrega a página para atualizar os dados
+                location.reload();
             } else {
                 alert("Erro ao salvar trabalho: " + data.error);
             }
@@ -142,6 +144,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Adicionar nova habilidade ao perfil
+    document.getElementById("add-skill").addEventListener("click", function () {
+        document.getElementById("new-skill").value = "";
+        document.getElementById("skill-modal").classList.remove("hidden");
+    });
+
+    // Salvar nova habilidade no banco ao confirmar no modal
     document.getElementById("save-skill").addEventListener("click", function () {
         let skillName = document.getElementById("new-skill").value.trim().toUpperCase();
         
@@ -176,8 +184,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Remover habilidades do perfil ao clicar no "x"
-    document.addEventListener("click", function (event) {
+     // ** Remover habilidade ao clicar no "x" **
+     document.addEventListener("click", function (event) {
         if (event.target.classList.contains("remove-skill")) {
             const skillElement = event.target.parentElement;
             const skillId = skillElement.dataset.id;
@@ -192,6 +200,15 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(data => {
                 if (data.success) {
                     skillElement.remove();
+
+                    // Se não houver mais habilidades, exibir a mensagem "Nenhuma habilidade cadastrada"
+                    let remainingSkills = document.querySelectorAll(".skills .skill-tag").length;
+                    if (remainingSkills === 0) {
+                        const skillsContainer = document.querySelector(".skills");
+                        let noSkillsMessage = document.createElement("p");
+                        noSkillsMessage.textContent = "Nenhuma habilidade cadastrada.";
+                        skillsContainer.insertBefore(noSkillsMessage, document.getElementById("add-skill"));
+                    }
                 } else {
                     alert("Erro ao remover habilidade: " + data.error);
                 }
@@ -200,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // Fechar modais ao clicar no botão "X"
+    // Fechar os modais ao clicar no botão "X"
     document.querySelectorAll(".close").forEach(closeBtn => {
         closeBtn.addEventListener("click", function () {
             this.parentElement.parentElement.classList.add("hidden");
