@@ -109,7 +109,7 @@ def chat_llm(request):
         return JsonResponse({"error": "Post not found."}, status=404)
     
 
-# 🔹 1️⃣ Salvar ou Editar Trabalho
+#Salvar ou Editar Trabalho
 @login_required
 def salvar_trabalho(request):
     if request.method != "POST":
@@ -119,14 +119,19 @@ def salvar_trabalho(request):
         data = json.loads(request.body)
         user = request.user
 
-        # Se o ID existir, atualiza. Caso contrário, cria novo.
+        # Se o ID existir, atualiza o trabalho existente
         if data.get("id"):
             projeto = get_object_or_404(ProjetoHistorico, id=data["id"], usuario=user)
             projeto.titulo = data["titulo"]
             projeto.descricao = data["descricao"]
             projeto.tipo_pagamento = data["tipo_pagamento"]
             projeto.valor_pagamento = data["valor_pagamento"]
+            projeto.save()
+
+            #Remover habilidades antigas associadas ao projeto
+            ProjetoHabilidade.objects.filter(projeto=projeto).delete()
         else:
+            # Criar um novo trabalho
             projeto = ProjetoHistorico.objects.create(
                 usuario=user,
                 titulo=data["titulo"],
@@ -135,7 +140,16 @@ def salvar_trabalho(request):
                 valor_pagamento=data["valor_pagamento"]
             )
 
-        projeto.save()
+        #Adicionar habilidades ao trabalho
+        for habilidade_data in data.get("habilidades", []):
+            nome_habilidade = habilidade_data.get("nome").strip()
+
+            if nome_habilidade:
+                # Normaliza o nome da habilidade (por exemplo, tudo em maiúsculas)
+                habilidade, created = Habilidade.objects.get_or_create(nome=nome_habilidade.upper())
+
+                # Criar a relação entre o trabalho e a habilidade
+                ProjetoHabilidade.objects.create(projeto=projeto, habilidade=habilidade)
 
         return JsonResponse({"success": True, "id": projeto.id})
 
@@ -143,7 +157,7 @@ def salvar_trabalho(request):
         return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
-# 🔹 2️⃣ Excluir Trabalho
+#Excluir Trabalho
 @login_required
 def excluir_trabalho(request, trabalho_id):
     if request.method != "DELETE":
@@ -160,7 +174,7 @@ def excluir_trabalho(request, trabalho_id):
         return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
-# 🔹 3️⃣ Salvar Preferências de Preços
+#Salvar Preferências de Preços
 @login_required
 def salvar_precos(request):
     if request.method != "POST":
@@ -180,7 +194,7 @@ def salvar_precos(request):
         return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
-# 🔹 4️⃣ Adicionar Habilidade
+#Adicionar Habilidade
 @login_required
 def adicionar_habilidade(request):
     if request.method != "POST":
@@ -200,7 +214,7 @@ def adicionar_habilidade(request):
         return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
-# 🔹 5️⃣ Remover Habilidade
+#Remover Habilidade
 @login_required
 def remover_habilidade(request, habilidade_id):
     if request.method != "DELETE":
