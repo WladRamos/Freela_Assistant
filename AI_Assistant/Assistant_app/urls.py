@@ -8,6 +8,10 @@ urlpatterns = [
     path("logout", views.logout_view, name="logout"),
     path("register", views.register, name="register"),
     path("profile", views.profile, name="profile"),
-    path("editar_perfil", views.editar_perfil, name="editar_perfil"),
     path("get_trabalho/<int:trabalho_id>/", views.get_trabalho, name="get_trabalho"),
+    path("salvar_trabalho/", views.salvar_trabalho, name="salvar_trabalho"),
+    path("excluir_trabalho/<int:trabalho_id>/", views.excluir_trabalho, name="excluir_trabalho"),
+    path("salvar_precos/", views.salvar_precos, name="salvar_precos"),
+    path("adicionar_habilidade/", views.adicionar_habilidade, name="adicionar_habilidade"),
+    path("remover_habilidade/<int:habilidade_id>/", views.remover_habilidade, name="remover_habilidade"),
 ]

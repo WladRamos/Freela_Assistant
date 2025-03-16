@@ -52,7 +52,8 @@
                         <input type="text" id="new-work-skill" placeholder="Adicionar habilidade">
                         <button type="button" id="add-work-skill">Adicionar</button>
 
-                        <button type="button" id="save-work">Confirmar</button>
+                        <button type="button" id="save-work">Salvar</button>
+                        <button type="button" id="delete-work" class="delete-button hidden">Excluir Trabalho</button>
                     </form>
                 </div>
             </div>
@@ -63,6 +64,7 @@
                 <div class="profile-box">
                     <p>Preço Fixo: $ <input type="number" name="preco_fixo_min" value="{{ user.preco_fixo_min }}"></p>
                     <p>Preço por hora: $ <input type="number" name="preco_hora_min" value="{{ user.preco_hora_min }}"></p>
+                    <button id="save-prices">Salvar Preços</button>
                 </div>
             </section>
 
@@ -79,7 +81,7 @@
                 </div>
             </section>
 
-            <!-- Modal de Adicionar Habilidade (Centralizado) -->
+            <!-- Modal de Adicionar Habilidade -->
             <div id="skill-modal" class="modal hidden">
                 <div class="modal-content">
                     <span class="close">&times;</span>
@@ -88,9 +90,6 @@
                     <button type="button" id="save-skill">Adicionar</button>
                 </div>
             </div>
-
-            <!-- Botão de Confirmação -->
-            <button id="confirm-changes">Confirmar Alterações</button>
 
         </div>
     {% else %}

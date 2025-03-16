@@ -11,6 +11,7 @@ import json
 from django.contrib.auth import authenticate, login, logout
 from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 
 def login_view(request):
     if request.method == "POST":
@@ -108,43 +109,112 @@ def chat_llm(request):
         return JsonResponse({"error": "Post not found."}, status=404)
     
 
+# 🔹 1️⃣ Salvar ou Editar Trabalho
 @login_required
-def editar_perfil(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            user = request.user
+def salvar_trabalho(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método não permitido"}, status=405)
 
-            # Atualiza preços
-            user.preco_fixo_min = float(data.get("preco_fixo_min", user.preco_fixo_min))
-            user.preco_hora_min = float(data.get("preco_hora_min", user.preco_hora_min))
-            user.save()
+    try:
+        data = json.loads(request.body)
+        user = request.user
 
-            # Atualiza trabalhos
-            for trabalho in data.get("trabalhos", []):
-                ProjetoHistorico.objects.update_or_create(
-                    id=trabalho.get("id"),
-                    defaults={
-                        "usuario": user,
-                        "titulo": trabalho["titulo"],
-                        "descricao": trabalho["descricao"],
-                        "tipo_pagamento": trabalho["tipo_pagamento"],
-                        "valor_pagamento": trabalho["valor_pagamento"]
-                    }
-                )
+        # Se o ID existir, atualiza. Caso contrário, cria novo.
+        if data.get("id"):
+            projeto = get_object_or_404(ProjetoHistorico, id=data["id"], usuario=user)
+            projeto.titulo = data["titulo"]
+            projeto.descricao = data["descricao"]
+            projeto.tipo_pagamento = data["tipo_pagamento"]
+            projeto.valor_pagamento = data["valor_pagamento"]
+        else:
+            projeto = ProjetoHistorico.objects.create(
+                usuario=user,
+                titulo=data["titulo"],
+                descricao=data["descricao"],
+                tipo_pagamento=data["tipo_pagamento"],
+                valor_pagamento=data["valor_pagamento"]
+            )
 
-            # Atualiza habilidades
-            UsuarioHabilidade.objects.filter(usuario=user).delete()
-            for skill in data.get("habilidades", []):
-                habilidade, _ = Habilidade.objects.get_or_create(nome=skill)
-                UsuarioHabilidade.objects.create(usuario=user, habilidade=habilidade)
+        projeto.save()
 
-            return JsonResponse({"success": True})
+        return JsonResponse({"success": True, "id": projeto.id})
 
-        except Exception as e:
-            return JsonResponse({"success": False, "error": str(e)})
-    
-    return JsonResponse({"success": False, "error": "Método não permitido"})
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+
+# 🔹 2️⃣ Excluir Trabalho
+@login_required
+def excluir_trabalho(request, trabalho_id):
+    if request.method != "DELETE":
+        return JsonResponse({"success": False, "error": "Método não permitido"}, status=405)
+
+    try:
+        user = request.user
+        projeto = get_object_or_404(ProjetoHistorico, id=trabalho_id, usuario=user)
+        projeto.delete()
+
+        return JsonResponse({"success": True})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+
+# 🔹 3️⃣ Salvar Preferências de Preços
+@login_required
+def salvar_precos(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método não permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        user = request.user
+
+        user.preco_fixo_min = float(data.get("preco_fixo_min", user.preco_fixo_min))
+        user.preco_hora_min = float(data.get("preco_hora_min", user.preco_hora_min))
+        user.save()
+
+        return JsonResponse({"success": True})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+
+# 🔹 4️⃣ Adicionar Habilidade
+@login_required
+def adicionar_habilidade(request):
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método não permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+        user = request.user
+
+        skill_name = Habilidade.normalizar_nome(data["nome"])
+        habilidade, _ = Habilidade.objects.get_or_create(nome=skill_name)
+        UsuarioHabilidade.objects.get_or_create(usuario=user, habilidade=habilidade)
+
+        return JsonResponse({"success": True, "habilidade_id": habilidade.id})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+
+# 🔹 5️⃣ Remover Habilidade
+@login_required
+def remover_habilidade(request, habilidade_id):
+    if request.method != "DELETE":
+        return JsonResponse({"success": False, "error": "Método não permitido"}, status=405)
+
+    try:
+        user = request.user
+        habilidade = get_object_or_404(Habilidade, id=habilidade_id)
+        UsuarioHabilidade.objects.filter(usuario=user, habilidade=habilidade).delete()
+
+        return JsonResponse({"success": True})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 @login_required
 def get_trabalho(request, trabalho_id):
