@@ -17,7 +17,13 @@ class User(AbstractUser):
 
 class Chat(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='chats')
+    nome = models.CharField(max_length=100, blank=True)
     data = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.nome:  # Se o nome ainda não foi atribuído, cria o nome automaticamente
+            self.nome = f'Chat {self.id}' if self.id else 'Chat'
+        super().save(*args, **kwargs)  # Chama o método save original
 
     def __str__(self):
         return f"Chat {self.id} - {self.usuario.username} ({self.data.strftime('%d/%m/%Y %H:%M')})"
