@@ -7,6 +7,7 @@ from Assistant_app.services.ClassJobFetch import JobFetcher
 from Assistant_app.services.llmSearchJobs import get_llm_response_search
 from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
 from Assistant_app.services.llmTips import answer_user_question
+from Assistant_app.services.chatTitleLLM import generate_chat_title
 import json
 from django.contrib.auth import authenticate, login, logout
 from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente
@@ -81,7 +82,11 @@ def chat_llm(request):
 
         # Criar um novo chat se necessário
         if not chat_id:
-            chat = Chat.objects.create(usuario=request.user)
+            titulo_chat = generate_chat_title(user_message)
+            if titulo_chat:
+                chat = Chat.objects.create(usuario=request.user, nome=titulo_chat)
+            else:
+                chat = Chat.objects.create(usuario=request.user)
         else:
             chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
 
