@@ -1,3 +1,110 @@
+// Função para carregar os chats na barra lateral
+function loadChatList() {
+    fetch('/api/chats/')
+        .then(response => response.json())
+        .then(data => {
+            const chatList = document.getElementById("chat-list");
+            chatList.innerHTML = ""; // Limpa a lista antes de recarregar
+
+            data.chats.forEach(chat => {
+                let li = document.createElement("li");
+                li.classList.add("chat-item");
+
+                let chatName = document.createElement("span");
+                chatName.textContent = chat.nome;
+                chatName.classList.add("chat-name");
+                chatName.addEventListener("click", function () {
+                    window.location.href = `/chat/${chat.id}/`;
+                });
+
+                let menuButton = document.createElement("button");
+                menuButton.textContent = "⋮";
+                menuButton.classList.add("chat-menu-button");
+                menuButton.addEventListener("click", function (event) {
+                    event.stopPropagation();
+                    toggleChatMenu(chat.id);
+                });
+
+                let dropdownMenu = document.createElement("div");
+                dropdownMenu.classList.add("chat-menu");
+                dropdownMenu.setAttribute("id", `menu-${chat.id}`);
+                dropdownMenu.innerHTML = `
+                    <button onclick="renameChat(${chat.id})">Renomear</button>
+                    <button onclick="deleteChat(${chat.id})">Excluir</button>
+                `;
+
+                li.appendChild(chatName);
+                li.appendChild(menuButton);
+                li.appendChild(dropdownMenu);
+                chatList.appendChild(li);
+            });
+        })
+        .catch(error => console.error("Erro ao carregar conversas:", error));
+}
+
+// Função para alternar o menu de opções de um chat
+function toggleChatMenu(chatId) {
+    document.querySelectorAll(".chat-menu").forEach(menu => {
+        let parentLi = menu.closest(".chat-item"); // Encontra o <li> pai do menu
+
+        if (menu.id !== `menu-${chatId}`) {
+            menu.classList.remove("active");
+            parentLi.classList.remove("active"); // Remove a classe do <li>
+        }
+    });
+
+    let menu = document.getElementById(`menu-${chatId}`);
+    let parentLi = menu.closest(".chat-item");
+
+    menu.classList.toggle("active");
+    parentLi.classList.toggle("active"); // Adiciona a classe ao <li> ativo
+}
+
+// Função para renomear um chat
+function renameChat(chatId) {
+    console.log('click no botao rename')
+    let newName = prompt("Digite o novo nome para o chat:");
+    if (newName) {
+        fetch(`/api/chat/${chatId}/rename/`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ nome: newName }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadChatList();
+            } else {
+                alert("Erro ao renomear chat.");
+            }
+        });
+    }
+}
+
+// Função para excluir um chat
+function deleteChat(chatId) {
+    if (confirm("Tem certeza que deseja excluir esta conversa?")) {
+        fetch(`/api/chat/${chatId}/delete/`, {
+            method: "DELETE",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                loadChatList();
+                window.location.href = "/"; // Volta para a página principal se o chat excluído estiver sendo exibido
+            } else {
+                alert("Erro ao excluir chat.");
+            }
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function(){
     let pathParts = window.location.pathname.replace(/\/$/, "").split("/");
     let currentChatId = pathParts.length > 2 && pathParts[1] === "chat" ? pathParts[2] : null;
@@ -30,68 +137,6 @@ document.addEventListener('DOMContentLoaded', function(){
             .catch(error => console.error("Erro ao carregar mensagens:", error));
     }
 
-    // Função para carregar os chats na barra lateral
-    function loadChatList() {
-        fetch('/api/chats/')
-            .then(response => response.json())
-            .then(data => {
-                const chatList = document.getElementById("chat-list");
-                chatList.innerHTML = ""; // Limpa a lista antes de recarregar
-    
-                data.chats.forEach(chat => {
-                    let li = document.createElement("li");
-                    li.classList.add("chat-item");
-    
-                    let chatName = document.createElement("span");
-                    chatName.textContent = chat.nome;
-                    chatName.classList.add("chat-name");
-                    chatName.addEventListener("click", function () {
-                        window.location.href = `/chat/${chat.id}/`;
-                    });
-    
-                    let menuButton = document.createElement("button");
-                    menuButton.textContent = "⋮";
-                    menuButton.classList.add("chat-menu-button");
-                    menuButton.addEventListener("click", function (event) {
-                        event.stopPropagation();
-                        toggleChatMenu(chat.id);
-                    });
-    
-                    let dropdownMenu = document.createElement("div");
-                    dropdownMenu.classList.add("chat-menu");
-                    dropdownMenu.setAttribute("id", `menu-${chat.id}`);
-                    dropdownMenu.innerHTML = `
-                        <button onclick="renameChat(${chat.id})">Renomear</button>
-                        <button onclick="deleteChat(${chat.id})">Excluir</button>
-                    `;
-    
-                    li.appendChild(chatName);
-                    li.appendChild(menuButton);
-                    li.appendChild(dropdownMenu);
-                    chatList.appendChild(li);
-                });
-            })
-            .catch(error => console.error("Erro ao carregar conversas:", error));
-    }
-    
-    // Função para alternar o menu de opções de um chat
-    function toggleChatMenu(chatId) {
-        document.querySelectorAll(".chat-menu").forEach(menu => {
-            let parentLi = menu.closest(".chat-item"); // Encontra o <li> pai do menu
-    
-            if (menu.id !== `menu-${chatId}`) {
-                menu.classList.remove("active");
-                parentLi.classList.remove("active"); // Remove a classe do <li>
-            }
-        });
-    
-        let menu = document.getElementById(`menu-${chatId}`);
-        let parentLi = menu.closest(".chat-item");
-    
-        menu.classList.toggle("active");
-        parentLi.classList.toggle("active"); // Adiciona a classe ao <li> ativo
-    }
-
     // Função para fechar o dropdown quando clicar fora
     document.addEventListener("click", function (event) {
         document.querySelectorAll(".chat-menu").forEach(menu => {
@@ -101,49 +146,6 @@ document.addEventListener('DOMContentLoaded', function(){
         });
     });
 
-    // Função para renomear um chat
-    function renameChat(chatId) {
-        let newName = prompt("Digite o novo nome para o chat:");
-        if (newName) {
-            fetch(`/api/chat/${chatId}/rename/`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": getCookie("csrftoken"),
-                },
-                body: JSON.stringify({ nome: newName }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadChatList();
-                } else {
-                    alert("Erro ao renomear chat.");
-                }
-            });
-        }
-    }
-
-    // Função para excluir um chat
-    function deleteChat(chatId) {
-        if (confirm("Tem certeza que deseja excluir esta conversa?")) {
-            fetch(`/api/chat/${chatId}/delete/`, {
-                method: "DELETE",
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken"),
-                },
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    loadChatList();
-                    window.location.href = "/"; // Volta para a página principal se o chat excluído estiver sendo exibido
-                } else {
-                    alert("Erro ao excluir chat.");
-                }
-            });
-        }
-    }
     // Chamar a função ao carregar a página
     loadChatList();
 
