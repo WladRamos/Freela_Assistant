@@ -286,3 +286,31 @@ def get_chats(request):
     chat_list = [{"id": chat.id, "nome": chat.nome, "data": chat.data.strftime("%d/%m/%Y %H:%M")} for chat in chats]
 
     return JsonResponse({"chats": chat_list})
+
+# View para renomear um chat
+@login_required
+def rename_chat(request, chat_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        new_name = data.get("nome", "").strip()
+
+        if not new_name:
+            return JsonResponse({"error": "Nome inválido."}, status=400)
+
+        chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
+        chat.nome = new_name
+        chat.save(update_fields=["nome"])
+
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"error": "Método não permitido."}, status=405)
+
+# View para excluir um chat
+@login_required
+def delete_chat(request, chat_id):
+    if request.method == "DELETE":
+        chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
+        chat.delete()
+        return JsonResponse({"success": True})
+
+    return JsonResponse({"error": "Método não permitido."}, status=405)

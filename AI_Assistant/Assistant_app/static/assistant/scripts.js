@@ -37,18 +37,106 @@ document.addEventListener('DOMContentLoaded', function(){
             .then(data => {
                 const chatList = document.getElementById("chat-list");
                 chatList.innerHTML = ""; // Limpa a lista antes de recarregar
-
+    
                 data.chats.forEach(chat => {
                     let li = document.createElement("li");
-                    li.textContent = chat.nome;
-                    li.dataset.chatId = chat.id;
-                    li.addEventListener("click", function () {
+                    li.classList.add("chat-item");
+    
+                    let chatName = document.createElement("span");
+                    chatName.textContent = chat.nome;
+                    chatName.classList.add("chat-name");
+                    chatName.addEventListener("click", function () {
                         window.location.href = `/chat/${chat.id}/`;
                     });
+    
+                    let menuButton = document.createElement("button");
+                    menuButton.textContent = "⋮";
+                    menuButton.classList.add("chat-menu-button");
+                    menuButton.addEventListener("click", function (event) {
+                        event.stopPropagation();
+                        toggleChatMenu(chat.id);
+                    });
+    
+                    let dropdownMenu = document.createElement("div");
+                    dropdownMenu.classList.add("chat-menu");
+                    dropdownMenu.setAttribute("id", `menu-${chat.id}`);
+                    dropdownMenu.innerHTML = `
+                        <button onclick="renameChat(${chat.id})">Renomear</button>
+                        <button onclick="deleteChat(${chat.id})">Excluir</button>
+                    `;
+    
+                    li.appendChild(chatName);
+                    li.appendChild(menuButton);
+                    li.appendChild(dropdownMenu);
                     chatList.appendChild(li);
                 });
             })
             .catch(error => console.error("Erro ao carregar conversas:", error));
+    }
+    
+    // Função para alternar o menu de opções de um chat
+    function toggleChatMenu(chatId) {
+        document.querySelectorAll(".chat-menu").forEach(menu => {
+            if (menu.id !== `menu-${chatId}`) {
+                menu.classList.remove("active"); // Fecha os outros menus
+            }
+        });
+
+        let menu = document.getElementById(`menu-${chatId}`);
+        menu.classList.toggle("active");
+    }
+
+    // Função para fechar o dropdown quando clicar fora
+    document.addEventListener("click", function (event) {
+        document.querySelectorAll(".chat-menu").forEach(menu => {
+            if (!menu.contains(event.target) && !menu.previousElementSibling.contains(event.target)) {
+                menu.classList.remove("active");
+            }
+        });
+    });
+
+    // Função para renomear um chat
+    function renameChat(chatId) {
+        let newName = prompt("Digite o novo nome para o chat:");
+        if (newName) {
+            fetch(`/api/chat/${chatId}/rename/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+                body: JSON.stringify({ nome: newName }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadChatList();
+                } else {
+                    alert("Erro ao renomear chat.");
+                }
+            });
+        }
+    }
+
+    // Função para excluir um chat
+    function deleteChat(chatId) {
+        if (confirm("Tem certeza que deseja excluir esta conversa?")) {
+            fetch(`/api/chat/${chatId}/delete/`, {
+                method: "DELETE",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    loadChatList();
+                    window.location.href = "/"; // Volta para a página principal se o chat excluído estiver sendo exibido
+                } else {
+                    alert("Erro ao excluir chat.");
+                }
+            });
+        }
     }
     // Chamar a função ao carregar a página
     loadChatList();
