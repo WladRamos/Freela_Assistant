@@ -21,9 +21,11 @@ class Chat(models.Model):
     data = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if not self.nome:  # Se o nome ainda não foi atribuído, cria o nome automaticamente
-            self.nome = f'Chat {self.id}' if self.id else 'Chat'
-        super().save(*args, **kwargs)  # Chama o método save original
+        super().save(*args, **kwargs)  # Salva primeiro para garantir o ID
+
+        if not self.nome:  # Agora que temos um ID, podemos definir o nome
+            self.nome = f"Chat {self.id}"
+            super().save(update_fields=["nome"])  # Atualiza apenas o campo "nome"
 
     def __str__(self):
         return f"Chat {self.id} - {self.usuario.username} ({self.data.strftime('%d/%m/%Y %H:%M')})"
