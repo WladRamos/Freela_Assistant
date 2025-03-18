@@ -77,13 +77,19 @@ document.addEventListener('DOMContentLoaded', function(){
     // Função para alternar o menu de opções de um chat
     function toggleChatMenu(chatId) {
         document.querySelectorAll(".chat-menu").forEach(menu => {
+            let parentLi = menu.closest(".chat-item"); // Encontra o <li> pai do menu
+    
             if (menu.id !== `menu-${chatId}`) {
-                menu.classList.remove("active"); // Fecha os outros menus
+                menu.classList.remove("active");
+                parentLi.classList.remove("active"); // Remove a classe do <li>
             }
         });
-
+    
         let menu = document.getElementById(`menu-${chatId}`);
+        let parentLi = menu.closest(".chat-item");
+    
         menu.classList.toggle("active");
+        parentLi.classList.toggle("active"); // Adiciona a classe ao <li> ativo
     }
 
     // Função para fechar o dropdown quando clicar fora

@@ -289,6 +289,11 @@ textarea:disabled, .send-button:disabled {
     z-index: 5; /* Mantém os itens sobrepostos corretamente */
 }
 
+/* Quando o menu dropdown estiver ativo, o pai ganha um z-index maior */
+.chat-item.active {
+    z-index: 100;
+}
+
 /* Evita que o hover afete a posição do dropdown */
 .chat-item:hover {
     background-color: #e0e0e0;
@@ -315,7 +320,7 @@ textarea:disabled, .send-button:disabled {
     border: 1px solid #ddd;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    z-index: 100; /* Garante que o dropdown fique sempre sobre os outros elementos */
+    z-index: 101; /* Garante que o dropdown fique sempre sobre os outros elementos */
 }
 
 /* Faz o dropdown aparecer corretamente sobre os outros elementos */
