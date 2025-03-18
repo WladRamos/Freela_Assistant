@@ -14,4 +14,7 @@ urlpatterns = [
     path("salvar_precos/", views.salvar_precos, name="salvar_precos"),
     path("adicionar_habilidade/", views.adicionar_habilidade, name="adicionar_habilidade"),
     path("remover_habilidade/<int:habilidade_id>/", views.remover_habilidade, name="remover_habilidade"),
+    path("chat/<int:chat_id>/", views.chat_view, name="chat_detail"),
+    path("api/chats/", views.get_chats, name="get_chats"),
+    path("api/chat/<int:chat_id>/messages/", views.get_chat_messages, name="get_chat_messages"),
 ]

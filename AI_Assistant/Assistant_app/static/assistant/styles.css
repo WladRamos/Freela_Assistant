@@ -186,3 +186,58 @@ textarea:disabled, .send-button:disabled {
 .send-button:disabled {
     background-color: #bbb;
 }
+
+/* Estilização da barra lateral */
+.sidebar {
+    width: 250px;
+    height: calc(100vh - 60px); /* Ajuste para não cobrir a nav */
+    background-color: #f8f9fa;
+    border-right: 2px solid #ddd;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    position: fixed;
+    left: 0;
+    top: 60px; /* Desloca a barra para baixo do header */
+}
+
+/* Título da barra lateral */
+.sidebar h3 {
+    font-size: 1.2em;
+    color: #333;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Lista de conversas */
+#chat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Cada item da lista (chat) */
+#chat-list li {
+    background-color: #fff;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: 500;
+    border: 1px solid #ddd;
+}
+
+/* Efeito hover nos chats */
+#chat-list li:hover {
+    background-color: #e0e0e0;
+    transform: scale(1.03);
+}
+
+.main-chat {
+    margin-left: 270px;
+    padding: 20px;
+    width: calc(100% - 270px);
+    margin-top: 60px; /* Ajuste para alinhar com a barra lateral */
+}

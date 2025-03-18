@@ -2,23 +2,36 @@
 {% load static %}
 
 {% block content %}
-    <div class="message-area" id="message-area">
-        <!-- As mensagens serão inseridas dinamicamente aqui -->
+<div class="container">
+    <!-- Barra lateral para exibir os chats salvos -->
+    <div class="sidebar">
+        <h3>Conversas</h3>
+        <ul id="chat-list">
+            <!-- Os chats serão carregados dinamicamente -->
+        </ul>
     </div>
 
-    {% if not user.is_authenticated %}
-        <div class="login-warning">
-            <p>Faça login para conversar com o assistente</p>
+    <!-- Área principal do chat -->
+    <div class="main-chat">
+        <div class="message-area" id="message-area">
+            <!-- As mensagens serão inseridas dinamicamente aqui -->
         </div>
-    {% endif %}
 
-    <div class="input-area">
-        <div class="input-container">
-            {% csrf_token %}
-            <textarea id="message-input" placeholder="Digite sua mensagem..." {% if not user.is_authenticated %}disabled{% endif %}></textarea>
-            <button type="submit" class="send-button" {% if not user.is_authenticated %}disabled{% endif %}>&#10148;</button>
+        {% if not user.is_authenticated %}
+            <div class="login-warning">
+                <p>Faça login para conversar com o assistente</p>
+            </div>
+        {% endif %}
+
+        <div class="input-area">
+            <div class="input-container">
+                {% csrf_token %}
+                <textarea id="message-input" placeholder="Digite sua mensagem..." {% if not user.is_authenticated %}disabled{% endif %}></textarea>
+                <button type="submit" class="send-button" {% if not user.is_authenticated %}disabled{% endif %}>&#10148;</button>
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}
 
 {% block script %} <script src="{% static 'assistant/scripts.js' %}"></script> {% endblock %}

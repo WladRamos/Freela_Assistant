@@ -1,50 +1,91 @@
 document.addEventListener('DOMContentLoaded', function(){
-    // Função para adicionar uma mensagem à área de mensagens
+    let pathParts = window.location.pathname.replace(/\/$/, "").split("/");
+    let currentChatId = pathParts.length > 2 && pathParts[1] === "chat" ? pathParts[2] : null;
+
+    console.log("Chat atual:", currentChatId);
+
+    // Função para adicionar uma mensagem ao chat
     function addMessage(content, className) {
         const messageArea = document.getElementById('message-area');
         const messageBox = document.createElement('div');
         messageBox.classList.add('message-box', className);
-    
-        // Converter Markdown para HTML e sanitizar com DOMPurify
         messageBox.innerHTML = DOMPurify.sanitize(marked.parse(content));
-    
         messageArea.appendChild(messageBox);
-    
-        setTimeout(() => {
-            messageArea.scrollTop = messageArea.scrollHeight;
-        }, 0);
+        setTimeout(() => { messageArea.scrollTop = messageArea.scrollHeight; }, 0);
     }
 
+    // Carregar mensagens do chat selecionado
+    function loadChatMessages(chatId) {
+        fetch(`/api/chat/${chatId}/messages/`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message-area').innerHTML = ""; // Limpa o chat
+                data.mensagens.forEach(msg => {
+                    addMessage(msg.conteudo, 'message-user');
+                    if (msg.resposta) {
+                        addMessage(msg.resposta.conteudo, 'message-response');
+                    }
+                });
+            })
+            .catch(error => console.error("Erro ao carregar mensagens:", error));
+    }
 
-    // Função para enviar mensagem com fetch
+    // Função para carregar os chats na barra lateral
+    function loadChatList() {
+        fetch('/api/chats/')
+            .then(response => response.json())
+            .then(data => {
+                const chatList = document.getElementById("chat-list");
+                chatList.innerHTML = ""; // Limpa a lista antes de recarregar
+
+                data.chats.forEach(chat => {
+                    let li = document.createElement("li");
+                    li.textContent = chat.nome;
+                    li.dataset.chatId = chat.id;
+                    li.addEventListener("click", function () {
+                        window.location.href = `/chat/${chat.id}/`;
+                    });
+                    chatList.appendChild(li);
+                });
+            })
+            .catch(error => console.error("Erro ao carregar conversas:", error));
+    }
+    // Chamar a função ao carregar a página
+    loadChatList();
+
+    // Se estiver em um chat específico, carregar mensagens
+    if (currentChatId) {
+        loadChatMessages(currentChatId);
+    }
+
+    // Enviar mensagem ao assistente
     function sendMessage() {
         const message = document.getElementById('message-input').value;
-        const csrftoken = getCookie('csrftoken'); // Obter o token CSRF
+        const csrftoken = getCookie('csrftoken');
 
         if (message.trim()) {
-            // Exibe a mensagem do usuário na área de diálogo
             addMessage(message, 'message-user');
 
-            fetch('/api/chat_llm', {
+            fetch('/api/chat_llm/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken,  // Adicionar o token CSRF no cabeçalho
+                    'X-CSRFToken': csrftoken,
                 },
-                body: JSON.stringify({ message: message })
+                body: JSON.stringify({ message: message, chat_id: currentChatId })
             })
             .then(response => response.json())
             .then(data => {
-                // Exibe a resposta do servidor na área de diálogo
                 addMessage(data.response, 'message-response');
-                
-                // Limpar campo de texto e resetar altura
+
+                if (!currentChatId) {
+                    currentChatId = data.chat_id;
+                    window.history.pushState({}, "", `/chat/${currentChatId}/`);
+                }
+
                 document.getElementById('message-input').value = '';
-                document.getElementById('message-input').style.height = '50px';
             })
-            .catch(error => {
-                console.error('Erro:', error);
-            });
+            .catch(error => console.error('Erro:', error));
         }
     }
 

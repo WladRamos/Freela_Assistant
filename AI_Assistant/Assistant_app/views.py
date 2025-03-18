@@ -9,7 +9,7 @@ from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
 from Assistant_app.services.llmTips import answer_user_question
 import json
 from django.contrib.auth import authenticate, login, logout
-from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade
+from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 
@@ -246,3 +246,39 @@ def get_trabalho(request, trabalho_id):
         })
     except ProjetoHistorico.DoesNotExist:
         return JsonResponse({"error": "Trabalho não encontrado"}, status=404)
+    
+def chat_view(request, chat_id):
+    chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
+    return render(request, "assistant/index.html", {"chat_id": chat.id})
+
+def get_chat_messages(request, chat_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Usuário não autenticado"}, status=403)
+
+    try:
+        chat = Chat.objects.get(id=chat_id, usuario=request.user)
+    except Chat.DoesNotExist:
+        return JsonResponse({"error": "Chat não encontrado"}, status=404)
+
+    mensagens = chat.mensagens.order_by("data").values("id", "conteudo", "data")
+    respostas = {r.mensagem.id: {"id": r.id, "conteudo": r.conteudo, "data": r.data.strftime("%d/%m/%Y %H:%M")} for r in RespostaAssistente.objects.filter(mensagem__chat=chat)}
+
+    mensagens_lista = []
+    for msg in mensagens:
+        mensagens_lista.append({
+            "id": msg["id"],
+            "conteudo": msg["conteudo"],
+            "data": msg["data"].strftime("%d/%m/%Y %H:%M"),
+            "resposta": respostas.get(msg["id"])
+        })
+
+    return JsonResponse({"mensagens": mensagens_lista})
+
+def get_chats(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "Usuário não autenticado"}, status=403)
+
+    chats = Chat.objects.filter(usuario=request.user).order_by("-data")
+    chat_list = [{"id": chat.id, "nome": chat.nome, "data": chat.data.strftime("%d/%m/%Y %H:%M")} for chat in chats]
+
+    return JsonResponse({"chats": chat_list})
