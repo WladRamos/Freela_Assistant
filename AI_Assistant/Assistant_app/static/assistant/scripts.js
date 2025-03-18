@@ -97,7 +97,13 @@ function deleteChat(chatId) {
         .then(data => {
             if (data.success) {
                 loadChatList();
-                window.location.href = "/"; // Volta para a página principal se o chat excluído estiver sendo exibido
+                // Verifica se o usuário está atualmente na página do chat excluído
+                let pathParts = window.location.pathname.replace(/\/$/, "").split("/");
+                let currentChatId = pathParts.length > 2 && pathParts[1] === "chat" ? pathParts[2] : null;
+
+                if (currentChatId == chatId) {
+                    window.location.href = "/"; // Apenas redireciona se o usuário estava na página do chat excluído
+                }
             } else {
                 alert("Erro ao excluir chat.");
             }
@@ -177,6 +183,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 if (!currentChatId) {
                     currentChatId = data.chat_id;
                     window.history.pushState({}, "", `/chat/${currentChatId}/`);
+                    loadChatList();
                 }
 
                 document.getElementById('message-input').value = '';
