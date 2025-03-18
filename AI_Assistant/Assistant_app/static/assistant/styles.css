@@ -65,14 +65,13 @@ main {
 }
 
 .input-area {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    position: fixed; /* Fixa a área de input na parte inferior */
-    bottom: 0; /* Gruda no rodapé da tela */
-    left: 0;
-    background-color: white; /* Adiciona fundo para destacar o input */
-    padding: 10px 0; /* Adiciona espaçamento entre o input e as bordas */
+    width: calc(100% - 295px); /* Mantém a área do input fora da sidebar */
+    position: fixed;
+    bottom: 0;
+    left: 295px; /* Mantém alinhado com a área de chat */
+    background-color: white;
+    padding: 10px 0;
+    /*box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);*/
 }
 
 .input-container {
@@ -208,7 +207,7 @@ textarea:disabled, .send-button:disabled {
 /* Estilização da barra lateral */
 .sidebar {
     width: 250px;
-    height: calc(100vh - 60px); /* Desconta a altura da nav */
+    height: 100vh; /* Ocupa toda a tela */
     background-color: #f8f9fa;
     border-right: 2px solid #ddd;
     padding: 20px;
@@ -216,8 +215,17 @@ textarea:disabled, .send-button:disabled {
     overflow-y: auto;
     position: fixed;
     left: 0;
-    top: 60px; /* Move a barra para baixo da nav */
+    top: 0; /* Começa do topo */
+    display: flex;
+    flex-direction: column;
+    padding-top: 80px; /* Evita sobreposição da nav */
 }
+
+.sidebar ul {
+    flex-grow: 1; /* Faz com que a lista ocupe o espaço disponível */
+    overflow-y: auto; /* Adiciona rolagem caso necessário */
+}
+
 
 /* Título da barra lateral */
 .sidebar h3 {
@@ -257,5 +265,9 @@ textarea:disabled, .send-button:disabled {
     margin-left: 270px;
     padding: 20px;
     width: calc(100% - 270px);
-    margin-top: 60px; /* Alinha com a barra lateral */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100vh;
+    padding-bottom: 60px; /* Evita que a última mensagem fique coberta pela input-area */
 }
