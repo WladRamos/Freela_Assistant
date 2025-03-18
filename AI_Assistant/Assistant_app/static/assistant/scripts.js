@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function(){
         if (message.trim()) {
             addMessage(message, 'message-user');
 
-            fetch('/api/chat_llm/', {
+            fetch('/api/chat_llm', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

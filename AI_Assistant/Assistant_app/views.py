@@ -72,41 +72,42 @@ def profile(request):
     
 def chat_llm(request):
     if request.method == "POST":
-
         data = json.loads(request.body)
         user_message = data.get('message')
+        chat_id = data.get('chat_id')
+
+        if not request.user.is_authenticated:
+            return JsonResponse({"error": "Usuário não autenticado"}, status=403)
+
+        # Criar um novo chat se necessário
+        if not chat_id:
+            chat = Chat.objects.create(usuario=request.user)
+        else:
+            chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
+
+        mensagem = Mensagem.objects.create(chat=chat, conteudo=user_message)
 
         router_decision = get_router_decision(user_message)
 
-        #Busca de trabalhos
         if router_decision == "search_jobs":
-            jobs = JobFetcher() #começar a usar filtros
-            jobs_str = jobs.get_jobs_str()
-            if jobs_str:
-                response = get_llm_response_search(user_message, jobs.get_jobs_str(), None) # add user info
-                if not response:
-                    response = 'Não foi possivel encontrar trabalhos no momento.'
-            else:
-                response = 'Não foi possivel encontrar trabalhos no momento.'
-
-        #Análise de trabalho
+            #jobs = JobFetcher()
+            #jobs_str = jobs.get_jobs_str()
+            #response = get_llm_response_search(user_message, jobs_str, None) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
+            response= "search_jobs"
         elif router_decision == "analyze_job":
-            response = get_llm_response_analyze(user_message, None) # add user info
-            if not response:
-                response = 'Não foi possivel analisar o trabalho no momento.'
-
-        #Dicas de freelancing/programação
+            #response = get_llm_response_analyze(user_message, None) or 'Não foi possível analisar o trabalho no momento.'
+            response = "analyze_job"
         elif router_decision == "freelancing_tips":
-            response = answer_user_question(user_message)
-            if not response:
-                response = 'Não foi possivel encontrar dicas no momento.'
-        
+            #response = answer_user_question(user_message) or 'Não foi possível encontrar dicas no momento.'
+            response = "freelancing_tips"
         else:
-            response = "Esta pergunta não está incluida no escopo do assistente."
+            response = "Esta pergunta não está incluída no escopo do assistente."
 
-        return JsonResponse({"response": response}, status =200)
+        resposta = RespostaAssistente.objects.create(mensagem=mensagem, conteudo=response)
+
+        return JsonResponse({"response": response, "chat_id": chat.id})
     else:
-        return JsonResponse({"error": "Post not found."}, status=404)
+        return JsonResponse({"error": "Método inválido."}, status=405)
     
 
 #Salvar ou Editar Trabalho
@@ -246,11 +247,13 @@ def get_trabalho(request, trabalho_id):
         })
     except ProjetoHistorico.DoesNotExist:
         return JsonResponse({"error": "Trabalho não encontrado"}, status=404)
-    
+
+@login_required    
 def chat_view(request, chat_id):
     chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
     return render(request, "assistant/index.html", {"chat_id": chat.id})
 
+@login_required
 def get_chat_messages(request, chat_id):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Usuário não autenticado"}, status=403)
@@ -274,6 +277,7 @@ def get_chat_messages(request, chat_id):
 
     return JsonResponse({"mensagens": mensagens_lista})
 
+@login_required
 def get_chats(request):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "Usuário não autenticado"}, status=403)
