@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import unicodedata
+from django.utils.timezone import now
 
 class TipoUsuario(models.TextChoices):
     ADMINISTRADOR = "Administrador"
@@ -74,6 +75,7 @@ class ProjetoHistorico(models.Model):
     descricao = models.TextField()
     tipo_pagamento = models.CharField(max_length=10, choices=TipoPagamento.choices)
     valor_pagamento = models.FloatField()
+    data = models.DateTimeField(default=now)
 
     def __str__(self):
         return f"{self.titulo} - {self.usuario.username} ({self.tipo_pagamento})"
