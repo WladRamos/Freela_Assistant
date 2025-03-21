@@ -10,7 +10,7 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, api_key=gpt_key)
 
 system = """Voce é um assistente inteligente projetado para ajudar programadores freelancers. 
 Com base no pedido do usuário, nas suas informações pessoais e nos trabalhos encontrados, liste para o usuário as opções de trabalhos que ele possui.
-Liste na resposta apenas os trabalhos que fazem sentido com o seu pedido e/ou informações pessoais.
+Liste na resposta apenas os trabalhos que fazem sentido com o seu pedido.
 Escreva sua resposta em markdown.
 """
 

@@ -1,6 +1,6 @@
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from AI_Assistant.Assistant_app.models import User, Habilidade, UsuarioHabilidade, ProjetoHistorico, ProjetoHabilidade
+from Assistant_app.models import User, Habilidade, UsuarioHabilidade, ProjetoHistorico, ProjetoHabilidade
 from dotenv import load_dotenv, find_dotenv
 from django.shortcuts import get_object_or_404
 import os
@@ -38,8 +38,7 @@ def get_user_info(user_id):
             "titulo": projeto.titulo,
             "descricao": projeto.descricao,
             "tipo_pagamento": projeto.tipo_pagamento,
-            "valor_pagamento": projeto.valor_pagamento,
-            "data": projeto.data,
+            "valor_pagamento_dolar": projeto.valor_pagamento,
             "habilidades": habilidades_projeto,
         })
 
@@ -56,27 +55,36 @@ def generate_filter(user_message, user_info):
     ("system", """Você é responsável por gerar uma lista de filtros para buscar trabalhos.
     Com base na mensagem do usuário e nas informações de habilidades, preferencias de preços e historico de trabalhos, gere um filtro para buscar trabalhos.
     Sua resposta deve conter os filtros em inglês entre aspas duplas, separando cada filtro por virgula.
+    A user_info sempre irá conter as informações de habilidades, preferencias de preços e historico de trabalhos. Cabe a voce decidir como e quais informações usar para gerar os filtros.
 
     Exemplos:
     - Mensagem: "Estou procurando um trabalho de programação em Python."
+    - user_info: "Habilidades": ["Python", "Java", "C++", "Machine Learning"],
+                  "Preferências de preço": 'preco_hora_min': 10, 'preco_fixo_min': 100,
+                  "Historico de trabalhos": ['titulo': 'Desenvolvimento de site', 'descricao': 'Desenvolvimento de site comercial utilizando django', 'tipo_pagamento': 'Hora', 'valor_pagamento_dolar': 20, 'habilidades': ['Python', 'Django', 'HTML', 'CSS']]
+
       -> Filtros gerados: "programming", "Python"
     
     - Mensagem: "Busco trabalhos semelhantes aos que já fiz."
-    - user_info: Histotico de trabalhos: "Desenvolvimento de aplicativos móveis, Desenvolvimento web, Design gráfico"
-        -> Filtros gerados: "Mobile app development", "Web development", "Graphic design"
+    - user_info: "Historico de trabalhos": ['titulo': 'Desenvolvimento de site', 'descricao': 'Desenvolvimento de site comercial utilizando django', 'tipo_pagamento': 'Hora', 'valor_pagamento_dolar': 20, 'habilidades': ['Python', 'Django', 'HTML', 'CSS']]
+        -> Filtros gerados: "Web development", "Django", "HTML", "CSS"
     
     - Mensagem: "Gostaria de encontrar trabalhos consizentes com minhas habilidades."
-    - user_info: Habilidades: "Python, Java, C++, Machine Learning"
+    - user_info: "Habilidades": ["Python", "Java", "C++", "Machine Learning"]
         -> Filtros gerados: "Python", "Java", "C++", "Machine Learning"
+    
+    Agora, gere os filtros para a mensagem do usuário e as informações fornecidas.
     """),
-    ("user", user_message),
-    ("user_info", user_info)
+    ("user", """
+     - Mensagem: {user_message}\n
+     - user_info: {user_info}
+     """)
     ])
 
     chain_filter = prompt_filter | llm
-    filtro_bruto = chain_filter.invoke({"message": user_message, "user_info": user_info}).content.strip()
+    filtro_bruto = chain_filter.invoke({"user_message": user_message, "user_info": user_info}).content.strip()
 
     try:
-        return re.search(r'"([^"]*)"', filtro_bruto)
+        return re.findall(r'"(.*?)"', filtro_bruto)
     except:
         return None

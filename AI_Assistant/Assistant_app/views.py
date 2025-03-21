@@ -8,6 +8,7 @@ from Assistant_app.services.llmSearchJobs import get_llm_response_search
 from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
 from Assistant_app.services.llmTips import answer_user_question
 from Assistant_app.services.llmChatTitle import generate_chat_title
+from Assistant_app.services.llmFilterMaker import get_user_info, generate_filter
 import json
 from django.contrib.auth import authenticate, login, logout
 from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente
@@ -93,12 +94,14 @@ def chat_llm(request):
         mensagem = Mensagem.objects.create(chat=chat, conteudo=user_message)
 
         router_decision = get_router_decision(user_message)
+        
 
         if router_decision == "search_jobs":
-            jobs = JobFetcher() #colocar filtros
+            user_info = get_user_info(request.user.id)
+            filters = generate_filter(user_message, user_info)
+            jobs = JobFetcher(filters)
             jobs_str = jobs.get_jobs_str()
-            # Adicionar user info na chamada
-            response = get_llm_response_search(user_message, jobs_str, None) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
+            response = get_llm_response_search(user_message, jobs_str, user_info) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
         elif router_decision == "analyze_job":
             #response = get_llm_response_analyze(user_message, None) or 'Não foi possível analisar o trabalho no momento.'
             response = "analyze_job"
