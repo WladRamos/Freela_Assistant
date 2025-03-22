@@ -3,3 +3,5 @@
 /.env
 /.DS_Store
 **/__pycache__/*.pyc
+AI_Assistant/e2a49c71-fd71-46f4-a2cb-0a50f52a38da/
+AI_Assistant/chroma.sqlite3
