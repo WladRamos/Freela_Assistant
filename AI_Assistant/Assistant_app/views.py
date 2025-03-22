@@ -103,8 +103,8 @@ def chat_llm(request):
             jobs_str = jobs.get_jobs_str()
             response = get_llm_response_search(user_message, jobs_str, user_info) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
         elif router_decision == "analyze_job":
-            #response = get_llm_response_analyze(user_message, None) or 'Não foi possível analisar o trabalho no momento.'
-            response = "analyze_job"
+            response = get_llm_response_analyze(user_message, None) or 'Não foi possível analisar o trabalho no momento.'
+            #response = "analyze_job"
         elif router_decision == "freelancing_tips":
             #response = answer_user_question(user_message) or 'Não foi possível encontrar dicas no momento.'
             response = "freelancing_tips"
