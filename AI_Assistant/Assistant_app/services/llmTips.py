@@ -28,13 +28,14 @@ ALLOWED_DOMAINS = [
     "https://www.guru.com/blog/"
 ]
 
-def generate_search_query(user_question):
+def generate_search_query(user_question, user_info):
     """Gera uma frase em inglês otimizada para a busca."""
     
     prompt_search_query = ChatPromptTemplate.from_messages([
         ("system", """Você receberá uma pergunta de um usuário e deverá gerar uma frase curta e clara em inglês 
         que será usada para buscar artigos sobre o assunto. A frase gerada não precisa ser uma tradução literal, 
         mas deve capturar a intenção principal da pergunta.
+        Um conjunto de informações do usuário serão passadas junto com a pergunta, e você pode usá-las para gerar a frase que será usada na busca, caso faça sentido.
 
         Exemplos:
         - Pergunta: "Boa noite, gostaria de entender melhor como funcionam os frameworks, para que servem, etc. Pois estou tendo dúvidas para iniciar o meu projeto."
@@ -47,11 +48,13 @@ def generate_search_query(user_question):
           -> Frase gerada: "How to get more clients as a freelancer?"
         
         Gere uma única frase objetiva para a seguinte pergunta:"""),
-        ("user", "{question}")
-    ])
+        ("user", """"
+            - Mensagem: {question}\n
+            - user_info: {user_info}
+         """)])
 
     chain_search_query = prompt_search_query | llm
-    return chain_search_query.invoke({"question": user_question}).content.strip()
+    return chain_search_query.invoke({"question": user_question, "user_info": user_info}).content.strip()
 
 def search_articles_with_tavily(question_in_english):
     """Usa Tavily para buscar artigos apenas nos sites permitidos."""
@@ -86,26 +89,29 @@ def format_results(search_response):
 
     return context
 
-def generate_final_answer(user_question, search_context):
+def generate_final_answer(user_question, search_context, user_info):
     """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""
     
     prompt_answer = ChatPromptTemplate.from_messages([
         ("system", f"""Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
+         Um conjunto de informações do usuário serão passadas junto com a pergunta, e você pode usá-las caso necessário.
         Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação.
         Ao final da sua resposta, coloque as fontes que voce utilizou para responder a pergunta.
 
         {search_context}"""),
-        ("user", "{question}")
-    ])
+        ("user", """"
+            - Mensagem: {question}\n
+            - user_info: {user_info}
+         """)])
 
     chain_answer = prompt_answer | llm
-    return chain_answer.invoke({"question": user_question}).content.strip()
+    return chain_answer.invoke({"question": user_question, "user_info": user_info}).content.strip()
 
-def answer_user_question(user_question):
+def answer_user_question(user_question, user_info):
     """Fluxo completo: Pergunta -> Busca Tavily -> Responde usando GPT-4o-mini"""
     
     # 1. Converter pergunta para inglês
-    question_in_english = generate_search_query(user_question)
+    question_in_english = generate_search_query(user_question, user_info)
 
     print("Question in English: ", question_in_english)
     
@@ -118,6 +124,6 @@ def answer_user_question(user_question):
     search_context = format_results(search_response)
     
     # 4. Gerar a resposta final usando GPT-4o-mini
-    final_answer = generate_final_answer(user_question, search_context)
+    final_answer = generate_final_answer(user_question, search_context, user_info)
     
     return final_answer

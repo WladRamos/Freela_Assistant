@@ -18,6 +18,7 @@ llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, api_key=gpt_key)
 system = """Você é um assistente inteligente projetado para ajudar programadores freelancers. 
 Com base nas informações do(s) trabalho(s) enviado(s) pelo usuário, faça uma análise, comparando-os com os trabalhos semelhantes obtidos da base de dados do sistema.
 Sua análise deve ser feita com o objetivo de responder a pergunta do usuário com relação ao trabalho enviado.
+A solicitação do usuário pode ter relação com suas informações pessoais, como trabalhos do seu histórico, habilidades, etc. Você receberá essas informações junto ao pedido do usuário.
 Caso os trabalhos recebidos da base não tenham relação suficiente com os enviados pelo usuário, informe que não foi possível encontrar trabalhos semelhantes.
 Escreva sua resposta em markdown.
 """

@@ -95,19 +95,17 @@ def chat_llm(request):
 
         router_decision = get_router_decision(user_message)
         
+        user_info = get_user_info(request.user.id)
 
         if router_decision == "search_jobs":
-            user_info = get_user_info(request.user.id)
             filters = generate_filter(user_message, user_info)
             jobs = JobFetcher(filters)
             jobs_str = jobs.get_jobs_str()
             response = get_llm_response_search(user_message, jobs_str, user_info) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
         elif router_decision == "analyze_job":
-            response = get_llm_response_analyze(user_message, None) or 'Não foi possível analisar o trabalho no momento.'
-            #response = "analyze_job"
+            response = get_llm_response_analyze(user_message, user_info) or 'Não foi possível analisar o trabalho no momento.'
         elif router_decision == "freelancing_tips":
-            #response = answer_user_question(user_message) or 'Não foi possível encontrar dicas no momento.'
-            response = "freelancing_tips"
+            response = answer_user_question(user_message, user_info) or 'Não foi possível encontrar dicas no momento.'
         else:
             response = "Esta pergunta não está incluída no escopo do assistente."
 
