@@ -7,6 +7,7 @@ from Assistant_app.services.ClassJobFetch import JobFetcher
 from Assistant_app.services.llmSearchJobs import get_llm_response_search
 from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
 from Assistant_app.services.llmTips import answer_user_question
+from Assistant_app.services.llmOther import get_llm_response_other
 from Assistant_app.services.llmChatTitle import generate_chat_title
 from Assistant_app.services.llmFilterMaker import get_user_info, generate_filter
 import json
@@ -71,6 +72,15 @@ def index(request):
 
 def profile(request):
     return render(request, "assistant/profile.html")
+
+def gerar_contexto_conversa(chat, limite_mensagens=5):
+    mensagens = chat.mensagens.order_by("data").prefetch_related("resposta_assistente")[:limite_mensagens]
+    contexto = "Contexto da conversa: \n"
+    for m in mensagens:
+        contexto += f"Usuário: {m.conteudo.strip()}\n"
+        if hasattr(m, "resposta_assistente"):
+            contexto += f"Assistente: {m.resposta_assistente.conteudo.strip()}\n"
+    return contexto.strip()
     
 def chat_llm(request):
     if request.method == "POST":
@@ -88,8 +98,10 @@ def chat_llm(request):
                 chat = Chat.objects.create(usuario=request.user, nome=titulo_chat)
             else:
                 chat = Chat.objects.create(usuario=request.user)
+            contexto = ""
         else:
             chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
+            contexto = gerar_contexto_conversa(chat)
 
         mensagem = Mensagem.objects.create(chat=chat, conteudo=user_message)
 
@@ -97,19 +109,24 @@ def chat_llm(request):
         
         user_info = get_user_info(request.user.id)
 
+        response = None
+
         if router_decision == "search_jobs":
             filters = generate_filter(user_message, user_info)
             jobs = JobFetcher(filters)
             jobs_str = jobs.get_jobs_str()
-            response = get_llm_response_search(user_message, jobs_str, user_info) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
+            response = get_llm_response_search(user_message, jobs_str, user_info, contexto) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
         elif router_decision == "analyze_job":
-            response = get_llm_response_analyze(user_message, user_info) or 'Não foi possível analisar o trabalho no momento.'
+            response = get_llm_response_analyze(user_message, user_info, contexto) or 'Não foi possível analisar o trabalho no momento.'
         elif router_decision == "freelancing_tips":
-            response = answer_user_question(user_message, user_info) or 'Não foi possível encontrar dicas no momento.'
+            response = answer_user_question(user_message, user_info, contexto) or 'Não foi possível encontrar dicas no momento.'
         else:
-            response = "Esta pergunta não está incluída no escopo do assistente."
+            response = get_llm_response_other(user_message, user_info, contexto)
 
-        resposta = RespostaAssistente.objects.create(mensagem=mensagem, conteudo=response)
+        if not response:   
+            response = "Desculpe, houve um erro ao processar a sua solicitação."
+
+        RespostaAssistente.objects.create(mensagem=mensagem, conteudo=response)
 
         return JsonResponse({"response": response, "chat_id": chat.id})
     else:

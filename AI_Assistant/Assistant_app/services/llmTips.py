@@ -89,25 +89,21 @@ def format_results(search_response):
 
     return context
 
-def generate_final_answer(user_question, search_context, user_info):
+system = """Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
+Um conjunto de informações do usuário será passado junto com a pergunta, e você pode usá-las caso necessário.
+Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação.
+Ao final da sua resposta, coloque as fontes que você utilizou para responder a pergunta."""
+
+def generate_final_answer(user_question, search_context, user_info, context):
     """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""
     
-    prompt_answer = ChatPromptTemplate.from_messages([
-        ("system", f"""Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
-         Um conjunto de informações do usuário serão passadas junto com a pergunta, e você pode usá-las caso necessário.
-        Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação.
-        Ao final da sua resposta, coloque as fontes que voce utilizou para responder a pergunta.
+    prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
+    print(prompt)
 
-        {search_context}"""),
-        ("user", """"
-            - Mensagem: {question}\n
-            - user_info: {user_info}
-         """)])
+    response = llm.invoke(input=prompt)
+    return response.content
 
-    chain_answer = prompt_answer | llm
-    return chain_answer.invoke({"question": user_question, "user_info": user_info}).content.strip()
-
-def answer_user_question(user_question, user_info):
+def answer_user_question(user_question, user_info, context):
     """Fluxo completo: Pergunta -> Busca Tavily -> Responde usando GPT-4o-mini"""
     
     # 1. Converter pergunta para inglês
@@ -124,6 +120,6 @@ def answer_user_question(user_question, user_info):
     search_context = format_results(search_response)
     
     # 4. Gerar a resposta final usando GPT-4o-mini
-    final_answer = generate_final_answer(user_question, search_context, user_info)
+    final_answer = generate_final_answer(user_question, search_context, user_info, context)
     
     return final_answer
