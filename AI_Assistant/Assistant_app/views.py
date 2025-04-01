@@ -19,6 +19,8 @@ from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.contrib import messages
 from django.utils.timezone import now
+from pathlib import Path
+import chromadb
 
 def login_view(request):
     if request.method == "POST":
@@ -448,3 +450,33 @@ def suspend_user(request):
 
         messages.success(request, f'Usuário suspenso por {dias} dias e {horas} horas.')
     return redirect('admin_user_list')
+
+@user_passes_test(lambda u: u.tipo_usuario == 'Administrador')
+def admin_vector_base(request):
+    base_dir = Path(__file__).resolve().parent
+    caminho_persistent_client = base_dir.parent
+
+    client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+
+    try:
+        collection = client.get_collection("Base_de_Trabalhos")
+        resultados = collection.get(include=["metadatas"])
+    except Exception as e:
+        return render(request, "assistant/admin-vector-error.html", {
+            "message": f"Erro ao acessar a base vetorial: {str(e)}"
+        })
+
+    documentos = []
+    for id_, metadata in zip(resultados['ids'], resultados['metadatas']):
+        doc = {'id': id_}
+        doc.update(metadata)
+        documentos.append(doc)
+
+    # Paginação
+    paginator = Paginator(documentos, 50)  # 50 por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "assistant/admin-vector-base.html", {
+        "page_obj": page_obj
+    })

@@ -1,0 +1,60 @@
+{% extends 'assistant/layout.html' %}
+{% load static %}
+
+{% block title %}Administração da Base Vetorial{% endblock %}
+
+{% block content %}
+<h1>Base Vetorial - Trabalhos</h1>
+
+<table border="1" cellpadding="10" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Título</th>
+      <th>Nível</th>
+      <th>Limite de Tempo</th>
+      <th>Categoria 1</th>
+      <th>Tipo Pagamento</th>
+      <th>Preço Mínimo</th>
+      <th>Preço Máximo</th>
+      <th>Moeda</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in page_obj %}
+    <tr>
+      <td>{{ doc.id }}</td>
+      <td>{{ doc.Job_Title }}</td>
+      <td>{{ doc.EX_level_demand }}</td>
+      <td>{{ doc.Time_Limitation }}</td>
+      <td>{{ doc.Category_1 }}</td>
+      <td>{{ doc.Payment_type }}</td>
+      <td>{{ doc.Min_price }}</td>
+      <td>{{ doc.Max_price }}</td>
+      <td>{{ doc.Currency }}</td>
+      <td><button>Ver Mais</button></td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="10">Nenhum documento encontrado.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- Paginação -->
+<div class="pagination" style="margin-top: 20px;">
+  {% if page_obj.has_previous %}
+    <a href="?page=1">Primeira</a>
+    <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+  {% endif %}
+
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}">Próxima</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}">Última</a>
+  {% endif %}
+</div>
+{% endblock %}

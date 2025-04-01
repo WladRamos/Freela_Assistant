@@ -22,4 +22,5 @@ urlpatterns = [
     path("painel_admin/usuarios/", views.admin_user_list, name="admin_user_list"),
     path('painel_admin/usuarios/banir/', views.ban_user, name='ban_user'),
     path('painel_admin/usuarios/suspender/', views.suspend_user, name='suspend_user'),
+    path("painel_admin/base-vetorial/", views.admin_vector_base, name="admin_vector_base"),
 ]
