@@ -39,12 +39,12 @@
       <td>{{ user.num_mensagens }}</td>
       <td>
         <div class="dropdown">
-          <button>⋮</button>
-          <div class="dropdown-content">
-            <button onclick="openBanModal('{{ user.id }}', '{{ user.username }}')">Banir</button>
-            <button onclick="openSuspendModal('{{ user.id }}', '{{ user.username }}')">Suspender</button>
+            <button onclick="toggleDropdown(this)">⋮</button>
+            <div class="dropdown-content">
+              <button onclick="openBanModal('{{ user.id }}', '{{ user.username }}')">Banir</button>
+              <button onclick="openSuspendModal('{{ user.id }}', '{{ user.username }}')">Suspender</button>
+            </div>
           </div>
-        </div>
       </td>
     </tr>
     {% empty %}
