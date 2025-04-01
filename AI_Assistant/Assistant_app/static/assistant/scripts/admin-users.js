@@ -1,13 +1,13 @@
 function openBanModal(userId, username) {
     document.getElementById('BanUserId').value = userId;
     document.getElementById('BanUserInfo').textContent = `Usuário: ${username}`;
-    document.getElementById('BanModal').style.display = 'block';
+    document.getElementById('BanModal').style.display = 'flex';
 }
 
 function openSuspendModal(userId, username) {
 document.getElementById('suspendUserId').value = userId;
 document.getElementById('suspendUserInfo').textContent = `Usuário: ${username}`;
-document.getElementById('suspendModal').style.display = 'block';
+document.getElementById('suspendModal').style.display = 'flex';
 }
 
 function closeModal() {

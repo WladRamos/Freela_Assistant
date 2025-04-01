@@ -379,7 +379,7 @@ def admin_user_list(request):
     search_query = request.GET.get('q', '')
     sort_by = request.GET.get('sort', 'mensagens')
 
-    users = User.objects.annotate(
+    users = User.objects.filter(tipo_usuario=TipoUsuario.USUARIO).annotate(
         num_chats=Count('chats', distinct=True),
         num_mensagens=Count('chats__mensagens', distinct=True)
     )
