@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Freelancer Assistant{% endblock %}</title>
-    {% block css %}<link rel="stylesheet" href="{% static 'assistant/styles.css' %}">{% endblock %}
+    {% block css %}<link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">{% endblock %}
     
     <script>
         function getCookie(name) {
@@ -36,7 +36,9 @@
         </div>
         <div class="nav-right">
             {% if user.is_authenticated %}
+            {% if user.tipo_usuario != 'Administrador' %}
                 <a href="{% url 'profile' %}">Perfil</a>
+            {% endif %}
                 <a href="{% url 'logout' %}">Logout</a>
             {% else %}
                 <a href="{% url 'login' %}">Login</a>

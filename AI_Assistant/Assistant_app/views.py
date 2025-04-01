@@ -344,6 +344,7 @@ def delete_chat(request, chat_id):
     return JsonResponse({"error": "Método não permitido."}, status=405)
 
 
+@login_required
 def admin_user_list(request):
     search_query = request.GET.get('q', '')
     sort_by = request.GET.get('sort', 'mensagens')
