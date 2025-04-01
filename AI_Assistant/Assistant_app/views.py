@@ -12,27 +12,44 @@ from Assistant_app.services.llmChatTitle import generate_chat_title
 from Assistant_app.services.llmFilterMaker import get_user_info, generate_filter
 import json
 from django.contrib.auth import authenticate, login, logout
-from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente, TipoUsuario
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404
+from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente, TipoUsuario, Banimento, Suspensao
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
+from django.contrib import messages
+from django.utils.timezone import now
 
 def login_view(request):
     if request.method == "POST":
-
-        # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
 
-        # Check if authentication successful
         if user is not None:
+            # Verifica se o usuário está banido
+            if hasattr(user, 'banimento'):
+                return render(request, "assistant/login.html", {
+                    "message": f"Conta banida. Motivo: {user.banimento.justificativa}"
+                })
+
+            # Verifica se há alguma suspensão ativa
+            suspensoes_ativas = user.suspensoes.filter(data_inicio__lte=now())
+            suspensoes_ativas = [s for s in suspensoes_ativas if s.ativa]
+
+            if suspensoes_ativas:
+                s = suspensoes_ativas[-1]  # pega a mais recente
+                return render(request, "assistant/login.html", {
+                    "message": f"Conta suspensa até {s.data_fim.strftime('%d/%m/%Y %H:%M')}. Motivo: {s.justificativa}"
+                })
+
+            # Se passou por todas as verificações
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
+
         else:
             return render(request, "assistant/login.html", {
-                "message": "Invalid username and/or password."
+                "message": "Usuário e/ou senha inválidos."
             })
     else:
         return render(request, "assistant/login.html")
@@ -45,27 +62,40 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        username = request.POST["username"]
-        email = request.POST["email"]
+        username = request.POST["username"].strip()
+        email = request.POST["email"].strip()
 
-        # Ensure password matches confirmation
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
+
         if password != confirmation:
             return render(request, "assistant/register.html", {
                 "message": "Passwords must match."
             })
 
-        # Attempt to create new user
+        # Verifica se o username ou email estão banidos
+        if Banimento.objects.filter(username_backup=username).exists():
+            return render(request, "assistant/register.html", {
+                "message": "Este nome de usuário está banido."
+            })
+
+        if Banimento.objects.filter(email_backup=email).exists():
+            return render(request, "assistant/register.html", {
+                "message": "Este email está banido."
+            })
+
+        # Tenta criar o usuário
         try:
             user = User.objects.create_user(username, email, password)
             user.save()
         except IntegrityError:
             return render(request, "assistant/register.html", {
-                "message": "Username already taken."
+                "message": "Nome de usuário já está em uso."
             })
+
         login(request, user)
         return HttpResponseRedirect(reverse("index"))
+
     else:
         return render(request, "assistant/register.html")
 
@@ -374,3 +404,47 @@ def admin_user_list(request):
         'search_query': search_query,
         'sort_by': sort_by,
     })
+
+@login_required
+@user_passes_test(lambda u: u.tipo_usuario == 'Administrador')
+def ban_user(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        justificativa = request.POST.get('justificativa')
+        user = get_object_or_404(User, id=user_id)
+
+        # Registra o banimento
+        Banimento.objects.create(
+            usuario=user,
+            justificativa=justificativa,
+            username_backup=user.username,
+            email_backup=user.email,
+            data=now()
+        )
+
+        # Exclui o usuário
+        user.delete()
+
+        messages.success(request, f'Usuário banido e removido do sistema com sucesso.')
+    return redirect('admin_user_list')
+
+@user_passes_test(lambda u: u.tipo_usuario == 'Administrador')
+def suspend_user(request):
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        justificativa = request.POST.get('justificativa')
+        dias = int(request.POST.get('dias') or 0)
+        horas = int(request.POST.get('horas') or 0)
+        user = get_object_or_404(User, id=user_id)
+
+        # Cria uma suspensão
+        Suspensao.objects.create(
+            usuario=user,
+            justificativa=justificativa,
+            data_inicio=now(),
+            duracao_dias=dias,
+            duracao_horas=horas
+        )
+
+        messages.success(request, f'Usuário suspenso por {dias} dias e {horas} horas.')
+    return redirect('admin_user_list')

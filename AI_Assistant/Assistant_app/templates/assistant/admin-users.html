@@ -4,8 +4,8 @@
 {% block title %}Administração de Usuários{% endblock %}
 
 {% block css %}
-<link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">
 <link rel="stylesheet" href="{% static 'assistant/styles/admin-users.css' %}">
+<link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -41,8 +41,8 @@
         <div class="dropdown">
           <button>⋮</button>
           <div class="dropdown-content">
-            <a href="#">Excluir</a>
-            <a href="#">Suspender</a>
+            <button onclick="openBanModal('{{ user.id }}', '{{ user.username }}')">Banir</button>
+            <button onclick="openSuspendModal('{{ user.id }}', '{{ user.username }}')">Suspender</button>
           </div>
         </div>
       </td>
@@ -68,4 +68,47 @@
     <a href="?page={{ page_obj.paginator.num_pages }}&q={{ search_query }}&sort={{ sort_by }}">Última</a>
   {% endif %}
 </div>
+
+<!-- Modal de Exclusão -->
+<div id="BanModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Banir usuário</h2>
+      <p id="BanUserInfo"></p>
+      <form method="post" action="{% url 'ban_user' %}">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" id="BanUserId">
+        <label>Justificativa</label>
+        <input type="text" name="justificativa" required>
+        <div class="modal-actions">
+          <button type="button" onclick="closeModal()">Cancelar</button>
+          <button type="submit">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Modal de Suspensão -->
+  <div id="suspendModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <h2>Suspender usuário</h2>
+      <p id="suspendUserInfo"></p>
+      <form method="post" action="{% url 'suspend_user' %}">
+        {% csrf_token %}
+        <input type="hidden" name="user_id" id="suspendUserId">
+        <label>Justificativa</label>
+        <input type="text" name="justificativa" required>
+        <label>Suspender por</label>
+        <input type="number" name="dias" min="0" placeholder="dias">
+        <input type="number" name="horas" min="0" max="23" placeholder="horas">
+        <div class="modal-actions">
+          <button type="button" onclick="closeModal()">Cancelar</button>
+          <button type="submit">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'assistant/scripts/admin-users.js' %}"></script>
 {% endblock %}

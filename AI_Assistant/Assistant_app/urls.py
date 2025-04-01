@@ -20,4 +20,6 @@ urlpatterns = [
     path("api/chat/<int:chat_id>/rename/", views.rename_chat, name="rename_chat"),
     path("api/chat/<int:chat_id>/delete/", views.delete_chat, name="delete_chat"),
     path("painel_admin/usuarios/", views.admin_user_list, name="admin_user_list"),
+    path('painel_admin/usuarios/banir/', views.ban_user, name='ban_user'),
+    path('painel_admin/usuarios/suspender/', views.suspend_user, name='suspend_user'),
 ]

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 import unicodedata
-from django.utils.timezone import now
+from django.utils.timezone import now, timedelta
 
 class TipoUsuario(models.TextChoices):
     ADMINISTRADOR = "Administrador"
@@ -86,3 +86,38 @@ class ProjetoHabilidade(models.Model):
 
     def __str__(self):
         return f"{self.projeto.titulo} - {self.habilidade.nome}"
+
+class Suspensao(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='suspensoes')
+    justificativa = models.TextField()
+    data_inicio = models.DateTimeField(default=now)
+    duracao_dias = models.IntegerField(default=0)
+    duracao_horas = models.IntegerField(default=0)
+
+    @property
+    def data_fim(self):
+        return self.data_inicio + timedelta(days=self.duracao_dias, hours=self.duracao_horas)
+
+    @property
+    def ativa(self):
+        return now() < self.data_fim
+
+    def __str__(self):
+        return f"Suspensão de {self.usuario.username} até {self.data_fim.strftime('%d/%m/%Y %H:%M')}"
+
+class Banimento(models.Model):
+    usuario = models.OneToOneField(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='banimento')
+    username_backup = models.CharField(max_length=150)
+    email_backup = models.EmailField()
+    justificativa = models.TextField()
+    data = models.DateTimeField(default=now)
+
+    def save(self, *args, **kwargs):
+        if self.usuario and not self.username_backup:
+            self.username_backup = self.usuario.username
+            self.email_backup = self.usuario.email
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        user_str = self.usuario.username if self.usuario else self.username_backup
+        return f"Usuário {user_str} banido em {self.data.strftime('%d/%m/%Y %H:%M')}"
