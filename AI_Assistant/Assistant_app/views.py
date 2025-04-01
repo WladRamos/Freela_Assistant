@@ -12,9 +12,11 @@ from Assistant_app.services.llmChatTitle import generate_chat_title
 from Assistant_app.services.llmFilterMaker import get_user_info, generate_filter
 import json
 from django.contrib.auth import authenticate, login, logout
-from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente
+from .models import User, ProjetoHistorico, UsuarioHabilidade, Habilidade, ProjetoHabilidade, Chat, Mensagem, RespostaAssistente, TipoUsuario
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
+from django.db.models import Count, Q
 
 def login_view(request):
     if request.method == "POST":
@@ -67,7 +69,10 @@ def register(request):
     else:
         return render(request, "assistant/register.html")
 
+@login_required
 def index(request):
+    if request.user.tipo_usuario == TipoUsuario.ADMINISTRADOR:
+        return render(request, "assistant/admin-area.html")
     return render(request, "assistant/index.html")
 
 def profile(request):
@@ -337,3 +342,34 @@ def delete_chat(request, chat_id):
         return JsonResponse({"success": True})
 
     return JsonResponse({"error": "Método não permitido."}, status=405)
+
+
+def admin_user_list(request):
+    search_query = request.GET.get('q', '')
+    sort_by = request.GET.get('sort', 'mensagens')
+
+    users = User.objects.annotate(
+        num_chats=Count('chats', distinct=True),
+        num_mensagens=Count('chats__mensagens', distinct=True)
+    )
+
+    if search_query:
+        users = users.filter(
+            Q(username__icontains=search_query) |
+            Q(email__icontains=search_query)
+        )
+
+    if sort_by == 'chats':
+        users = users.order_by('-num_chats')
+    else:
+        users = users.order_by('-num_mensagens')
+
+    paginator = Paginator(users, 10)  # 10 usuários por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'assistant/admin-users.html', {
+        'page_obj': page_obj,
+        'search_query': search_query,
+        'sort_by': sort_by,
+    })

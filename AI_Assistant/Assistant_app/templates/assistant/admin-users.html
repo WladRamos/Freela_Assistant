@@ -1,0 +1,103 @@
+{% extends 'assistant/layout.html' %}
+
+{% block content %}
+<h1>Administração de Usuários</h1>
+
+<form method="get" style="margin-bottom: 20px;">
+  <input type="text" name="q" placeholder="Buscar por nome ou email" value="{{ search_query }}">
+  <select name="sort">
+    <option value="mensagens" {% if sort_by == "mensagens" %}selected{% endif %}>Ordenar por mensagens</option>
+    <option value="chats" {% if sort_by == "chats" %}selected{% endif %}>Ordenar por conversas</option>
+  </select>
+  <button type="submit">Buscar</button>
+</form>
+
+<table border="1" cellspacing="0" cellpadding="10">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Email</th>
+      <th>Nº de Conversas</th>
+      <th>Nº de Mensagens</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for user in page_obj %}
+    <tr>
+      <td>{{ user.username }}</td>
+      <td>{{ user.email }}</td>
+      <td>{{ user.num_chats }}</td>
+      <td>{{ user.num_mensagens }}</td>
+      <td>
+        <div class="dropdown">
+          <button>⋮</button>
+          <div class="dropdown-content">
+            <a href="#">Excluir</a>
+            <a href="#">Suspender</a>
+          </div>
+        </div>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">Nenhum usuário encontrado.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="pagination">
+  {% if page_obj.has_previous %}
+    <a href="?page=1&q={{ search_query }}&sort={{ sort_by }}">Primeira</a>
+    <a href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&sort={{ sort_by }}">Anterior</a>
+  {% endif %}
+
+  <span>Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&sort={{ sort_by }}">Próxima</a>
+    <a href="?page={{ page_obj.paginator.num_pages }}&q={{ search_query }}&sort={{ sort_by }}">Última</a>
+  {% endif %}
+</div>
+
+<style>
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+
+  .dropdown:hover .dropdown-content {
+    display: block;
+  }
+
+  .dropdown-content a {
+    display: block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: black;
+  }
+
+  .dropdown-content a:hover {
+    background-color: #f1f1f1;
+  }
+
+  .pagination {
+    margin-top: 20px;
+  }
+
+  .pagination a {
+    margin-right: 5px;
+  }
+</style>
+{% endblock %}
