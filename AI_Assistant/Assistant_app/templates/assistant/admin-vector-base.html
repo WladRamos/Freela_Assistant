@@ -92,10 +92,67 @@
 <div id="detailsModal" class="modal" style="display: none;">
   <div class="modal-content">
     <h2>Detalhes do Trabalho</h2>
-    <div id="modalContent"></div>
-    <div class="modal-actions">
-      <button onclick="closeModal()">Fechar</button>
-    </div>
+    <form id="editForm">
+      <div id="modalFields">
+        <div class="field-group">
+          <label>Título:</label>
+          <input type="text" name="jobTitle" disabled>
+        </div>
+        <div class="field-group">
+          <label>Nível de Experiência:</label>
+          <input type="text" name="exLevel" disabled>
+        </div>
+        <div class="field-group">
+          <label>Limite de Tempo:</label>
+          <input type="text" name="timeLimit" disabled>
+        </div>
+        <div class="field-group">
+          <label>Palavra-chave:</label>
+          <input type="text" name="keyword" disabled>
+        </div>
+        <div class="field-group">
+          <label>Descrição:</label>
+          <textarea name="description" rows="4" disabled></textarea>
+        </div>
+        <div class="field-group">
+          <label>Categorias:</label>
+          <div class="category-container" id="categoryContainer"></div>
+        </div>
+        <div class="field-group">
+          <label>Tipo de Pagamento:</label>
+          <input type="text" name="payment" disabled>
+        </div>
+        <div class="field-group">
+          <label>Custo Total:</label>
+          <input type="text" name="cost" disabled>
+        </div>
+        <div class="field-group">
+          <label>Valor por Hora:</label>
+          <input type="text" name="hourly" disabled>
+        </div>
+        <div class="field-group">
+          <label>Moeda:</label>
+          <input type="text" name="currency" disabled>
+        </div>
+        <div class="field-group">
+          <label>Preço Mínimo:</label>
+          <input type="text" name="min" disabled>
+        </div>
+        <div class="field-group">
+          <label>Preço Máximo:</label>
+          <input type="text" name="max" disabled>
+        </div>
+        <div class="field-group">
+          <label>Preço Médio:</label>
+          <input type="text" name="avg" disabled>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" onclick="closeModal()">Fechar</button>
+        <button type="button" id="editBtn">Editar</button>
+        <button type="submit" id="saveBtn" style="display: none;">Salvar Alterações</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

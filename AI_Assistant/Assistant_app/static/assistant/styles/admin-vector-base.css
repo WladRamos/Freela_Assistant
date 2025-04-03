@@ -204,3 +204,63 @@ background-color: #bbb;
 .details-button:hover {
     background-color: #d5d5d5;
 }
+
+/* Adiciona estilo para categorias agrupadas */
+.categorias-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.categoria {
+background-color: #e0e0e0;
+color: #333;
+padding: 6px 12px;
+border-radius: 20px;
+font-size: 0.9em;
+}
+
+.modal-content label {
+display: block;
+margin-top: 10px;
+font-weight: bold;
+}
+
+.modal-content input[type="text"] {
+width: 100%;
+padding: 8px;
+margin-top: 5px;
+margin-bottom: 10px;
+border: 1px solid #ccc;
+border-radius: 5px;
+background-color: #f8f8f8;
+}
+
+.modal-content input[type="text"]:disabled {
+background-color: #f0f0f0;
+color: #666;
+}
+
+.modal-actions button {
+padding: 8px 16px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+
+.modal-actions .edit-button,
+.modal-actions .save-button {
+background-color: #4CAF50;
+color: white;
+margin-left: 10px;
+}
+
+.modal-actions .edit-button:hover,
+.modal-actions .save-button:hover {
+background-color: #45a049;
+}
