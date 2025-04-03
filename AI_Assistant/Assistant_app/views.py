@@ -460,23 +460,35 @@ def admin_vector_base(request):
 
     try:
         collection = client.get_collection("Base_de_Trabalhos")
-        resultados = collection.get(include=["metadatas"])
+        all_ids = collection.get(include=[])["ids"]
     except Exception as e:
         return render(request, "assistant/admin-vector-error.html", {
             "message": f"Erro ao acessar a base vetorial: {str(e)}"
         })
 
+    # Paginação com base apenas nos IDs
+    paginator = Paginator(all_ids, 50)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    try:
+        # Buscar apenas os documentos da página atual
+        resultados = collection.get(ids=list(page_obj), include=["metadatas"])
+    except Exception as e:
+        return render(request, "assistant/admin-vector-error.html", {
+            "message": f"Erro ao buscar documentos da página: {str(e)}"
+        })
+
     documentos = []
     for id_, metadata in zip(resultados['ids'], resultados['metadatas']):
+        metadata = {k.replace(" ", "_"): v for k, v in metadata.items()}
         doc = {'id': id_}
         doc.update(metadata)
         documentos.append(doc)
 
-    # Paginação
-    paginator = Paginator(documentos, 50)  # 50 por página
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    print(documentos[0])
 
     return render(request, "assistant/admin-vector-base.html", {
-        "page_obj": page_obj
+        "page_obj": page_obj,  # ainda contém os IDs paginados
+        "documentos": documentos  # os documentos reais da página
     })
