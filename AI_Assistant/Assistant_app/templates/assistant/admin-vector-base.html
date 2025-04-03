@@ -11,59 +11,67 @@
 {% block content %}
 <h1>Base Vetorial - Trabalhos</h1>
 
-<form method="post" id="bulkDeleteForm">
-  <button type="submit" disabled id="deleteSelectedBtn" style="margin-top: 15px;">Excluir Selecionados</button>
-  {% csrf_token %}
-  <table border="1" cellpadding="10" cellspacing="0">
-    <thead>
-      <tr>
-        <th><input type="checkbox" id="selectAll"></th>
-        <th>Título</th>
-        <th>Categoria</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for doc in documentos %}
-      <tr
-        data-id="{{ doc.id }}"
-        data-job-title="{{ doc.Job_Title }}"
-        data-ex-level="{{ doc.EX_level_demand }}"
-        data-time-limit="{{ doc.Time_Limitation }}"
-        data-keyword="{{ doc.Search_Keyword }}"
-        data-description="{{ doc.Description }}"
-        data-category1="{{ doc.Category_1 }}"
-        data-category2="{{ doc.Category_2 }}"
-        data-category3="{{ doc.Category_3 }}"
-        data-category4="{{ doc.Category_4 }}"
-        data-category5="{{ doc.Category_5 }}"
-        data-category6="{{ doc.Category_6 }}"
-        data-category7="{{ doc.Category_7 }}"
-        data-category8="{{ doc.Category_8 }}"
-        data-category9="{{ doc.Category_9 }}"
-        data-payment="{{ doc.Payment_type }}"
-        data-cost="{{ doc.Job_Cost }}"
-        data-hourly="{{ doc.Hourly_Rate }}"
-        data-currency="{{ doc.Currency }}"
-        data-min="{{ doc.Min_price }}"
-        data-max="{{ doc.Max_price }}"
-        data-avg="{{ doc.Avg_price }}"
-      >
-        <td><input type="checkbox" class="selectCheckbox" name="selected_ids" value="{{ doc.id }}"></td>
-        <td>{{ doc.Job_Title }}</td>
-        <td>{{ doc.Category_1 }}</td>
-        <td>
-          <button type="button" class="details-button">Ver Mais</button>
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="5">Nenhum documento encontrado.</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</form>
+<div class="top-controls">
+  <form method="get" class="search-form">
+    <input type="text" name="q" placeholder="Buscar por título, categoria, etc" value="{{ search_query }}">
+    <button type="submit">Buscar</button>
+  </form>
+
+  <form method="post" id="bulkDeleteForm">
+    {% csrf_token %}
+    <button type="submit" disabled id="deleteSelectedBtn">Excluir Selecionados</button>
+  </form>
+</div>
+
+<table border="1" cellpadding="10" cellspacing="0">
+  <thead>
+    <tr>
+      <th><input type="checkbox" id="selectAll"></th>
+      <th>Título</th>
+      <th>Categorias</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for doc in documentos %}
+    <tr
+      data-id="{{ doc.id }}"
+      data-job-title="{{ doc.Job_Title }}"
+      data-ex-level="{{ doc.EX_level_demand }}"
+      data-time-limit="{{ doc.Time_Limitation }}"
+      data-keyword="{{ doc.Search_Keyword }}"
+      data-description="{{ doc.Description }}"
+      data-category1="{{ doc.Category_1 }}"
+      data-category2="{{ doc.Category_2 }}"
+      data-category3="{{ doc.Category_3 }}"
+      data-category4="{{ doc.Category_4 }}"
+      data-category5="{{ doc.Category_5 }}"
+      data-category6="{{ doc.Category_6 }}"
+      data-category7="{{ doc.Category_7 }}"
+      data-category8="{{ doc.Category_8 }}"
+      data-category9="{{ doc.Category_9 }}"
+      data-payment="{{ doc.Payment_type }}"
+      data-cost="{{ doc.Job_Cost }}"
+      data-hourly="{{ doc.Hourly_Rate }}"
+      data-currency="{{ doc.Currency }}"
+      data-min="{{ doc.Min_price }}"
+      data-max="{{ doc.Max_price }}"
+      data-avg="{{ doc.Avg_price }}"
+    >
+      <td><input type="checkbox" class="selectCheckbox" name="selected_ids" value="{{ doc.id }}"></td>
+      <td>{{ doc.Job_Title }}</td>
+      <td>{% if doc.Category_1 %}{{ doc.Category_1 }}{% endif %}{% if doc.Category_2 %}, {{ doc.Category_2 }}{% endif %}{% if doc.Category_3 %}, {{ doc.Category_3 }}{% endif %}{% if doc.Category_4 %}, {{ doc.Category_4 }}{% endif %}</td>
+      <td>
+        <button type="button" class="details-button">Ver Mais</button>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5">Nenhum documento encontrado.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
 
 <!-- Paginação -->
 <div class="pagination" style="margin-top: 20px;">

@@ -455,40 +455,45 @@ def suspend_user(request):
 def admin_vector_base(request):
     base_dir = Path(__file__).resolve().parent
     caminho_persistent_client = base_dir.parent
-
     client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+
+    search_query = request.GET.get('q', '').strip()
+    page_number = request.GET.get('page', 1)
 
     try:
         collection = client.get_collection("Base_de_Trabalhos")
-        all_ids = collection.get(include=[])["ids"]
+
+        if search_query:
+            resultados = collection.query(
+                query_texts=[search_query],
+                n_results=1000,
+                include=["metadatas"]
+            )
+            documentos = []
+            for id_, metadata in zip(resultados['ids'][0], resultados['metadatas'][0]):
+                metadata = {k.replace(" ", "_"): v for k, v in metadata.items()}
+                doc = {"id": id_}
+                doc.update(metadata)
+                documentos.append(doc)
+        else:
+            all_data = collection.get(include=["metadatas"])
+            documentos = []
+            for id_, metadata in zip(all_data['ids'], all_data['metadatas']):
+                metadata = {k.replace(" ", "_"): v for k, v in metadata.items()}
+                doc = {"id": id_}
+                doc.update(metadata)
+                documentos.append(doc)
+
     except Exception as e:
         return render(request, "assistant/admin-vector-error.html", {
             "message": f"Erro ao acessar a base vetorial: {str(e)}"
         })
 
-    # Paginação com base apenas nos IDs
-    paginator = Paginator(all_ids, 50)
-    page_number = request.GET.get('page')
+    paginator = Paginator(documentos, 50)
     page_obj = paginator.get_page(page_number)
 
-    try:
-        # Buscar apenas os documentos da página atual
-        resultados = collection.get(ids=list(page_obj), include=["metadatas"])
-    except Exception as e:
-        return render(request, "assistant/admin-vector-error.html", {
-            "message": f"Erro ao buscar documentos da página: {str(e)}"
-        })
-
-    documentos = []
-    for id_, metadata in zip(resultados['ids'], resultados['metadatas']):
-        metadata = {k.replace(" ", "_"): v for k, v in metadata.items()}
-        doc = {'id': id_}
-        doc.update(metadata)
-        documentos.append(doc)
-
-    print(documentos[0])
-
     return render(request, "assistant/admin-vector-base.html", {
-        "page_obj": page_obj,  # ainda contém os IDs paginados
-        "documentos": documentos  # os documentos reais da página
+        "page_obj": page_obj,
+        "documentos": page_obj.object_list,
+        "search_query": search_query,
     })
