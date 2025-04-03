@@ -1,33 +1,33 @@
 function openDetailsModalFromRow(row) {
     const fields = [
-      { label: "Job Title", key: "job-title" },
-      { label: "Nível de Experiência", key: "ex-level" },
-      { label: "Limite de Tempo", key: "time-limit" },
-      { label: "Palavra-chave", key: "keyword" },
-      { label: "Descrição", key: "description" },
-      { label: "Categoria 1", key: "category1" },
-      { label: "Categoria 2", key: "category2" },
-      { label: "Categoria 3", key: "category3" },
-      { label: "Categoria 4", key: "category4" },
-      { label: "Categoria 5", key: "category5" },
-      { label: "Categoria 6", key: "category6" },
-      { label: "Categoria 7", key: "category7" },
-      { label: "Categoria 8", key: "category8" },
-      { label: "Categoria 9", key: "category9" },
-      { label: "Tipo de Pagamento", key: "payment" },
-      { label: "Custo Total", key: "cost" },
-      { label: "Valor por Hora", key: "hourly" },
-      { label: "Moeda", key: "currency" },
-      { label: "Preço Mínimo", key: "min" },
-      { label: "Preço Máximo", key: "max" },
-      { label: "Preço Médio", key: "avg" }
-    ];
+        { label: "Job Title", key: "jobTitle" },
+        { label: "Nível de Experiência", key: "exLevel" },
+        { label: "Limite de Tempo", key: "timeLimit" },
+        { label: "Palavra-chave", key: "keyword" },
+        { label: "Descrição", key: "description" },
+        { label: "Categoria 1", key: "category1" },
+        { label: "Categoria 2", key: "category2" },
+        { label: "Categoria 3", key: "category3" },
+        { label: "Categoria 4", key: "category4" },
+        { label: "Categoria 5", key: "category5" },
+        { label: "Categoria 6", key: "category6" },
+        { label: "Categoria 7", key: "category7" },
+        { label: "Categoria 8", key: "category8" },
+        { label: "Categoria 9", key: "category9" },
+        { label: "Tipo de Pagamento", key: "payment" },
+        { label: "Custo Total", key: "cost" },
+        { label: "Valor por Hora", key: "hourly" },
+        { label: "Moeda", key: "currency" },
+        { label: "Preço Mínimo", key: "min" },
+        { label: "Preço Máximo", key: "max" },
+        { label: "Preço Médio", key: "avg" }
+      ];
   
     let html = "<ul>";
     fields.forEach(f => {
-      const valor = row.dataset[f.key] || "—";
-      html += `<li><strong>${f.label}:</strong> ${valor}</li>`;
-    });
+        const valor = row.dataset[f.key] || "—";
+        html += `<li><strong>${f.label}:</strong> ${valor}</li>`;
+      });
     html += "</ul>";
   
     document.getElementById("modalContent").innerHTML = html;

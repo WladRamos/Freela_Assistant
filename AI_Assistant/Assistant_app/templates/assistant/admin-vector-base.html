@@ -3,10 +3,16 @@
 
 {% block title %}Administração da Base Vetorial{% endblock %}
 
+{% block css %}
+<link rel="stylesheet" href="{% static 'assistant/styles/admin-vector-base.css' %}">
+<link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">
+{% endblock %}
+
 {% block content %}
 <h1>Base Vetorial - Trabalhos</h1>
 
 <form method="post" id="bulkDeleteForm">
+  <button type="submit" disabled id="deleteSelectedBtn" style="margin-top: 15px;">Excluir Selecionados</button>
   {% csrf_token %}
   <table border="1" cellpadding="10" cellspacing="0">
     <thead>
@@ -57,8 +63,6 @@
       {% endfor %}
     </tbody>
   </table>
-
-  <button type="submit" disabled id="deleteSelectedBtn" style="margin-top: 15px;">Excluir Selecionados</button>
 </form>
 
 <!-- Paginação -->
