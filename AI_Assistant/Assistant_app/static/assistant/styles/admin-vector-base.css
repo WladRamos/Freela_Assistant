@@ -202,16 +202,71 @@ background-color: #e0e0e0;
     margin-bottom: 15px;
     width: 100%;
     box-sizing: border-box;
+    position: relative;
   }
   
-  .categoria {
-    background-color: #e0e0e0;
-    color: #333;
-    padding: 6px 12px;
-    border-radius: 20px;
-    font-size: 0.9em;
-    white-space: nowrap;
-  }
+/* Categoria individual */
+.categoria {
+  background-color: #e0e0e0;
+  color: #333;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.categoria.editable:hover {
+  background-color: #f8d7da;
+  cursor: pointer;
+}
+
+.categoria.editable::after {
+  content: "×";
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #d9534f;
+  color: white;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  font-size: 14px;
+  display: none;
+}
+
+.categoria.editable:hover::after {
+  display: block;
+}
+
+/* Campo de nova categoria */
+#adicionarCategoria {
+  display: none;
+  margin-top: 10px;
+}
+
+#adicionarCategoria input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#adicionarCategoria button {
+  padding: 8px 14px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#adicionarCategoria button:hover {
+  background-color: #45a049;
+}
   
   /* Ações no rodapé do modal */
   .modal-actions {

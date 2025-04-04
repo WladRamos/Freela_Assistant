@@ -39,7 +39,31 @@ function openDetailsModalFromRow(row) {
   }
   
   function closeModal() {
-    document.getElementById("detailsModal").style.display = "none";
+    const modal = document.getElementById("detailsModal");
+    const form = document.getElementById("editForm");
+  
+    // Esconder modal
+    modal.style.display = "none";
+  
+    // Esconder campo de adicionar categoria
+    document.getElementById("adicionarCategoria").style.display = "none";
+    document.getElementById("novaCategoriaInput").value = "";
+  
+    // Remover classe 'editable' e listener das categorias antigas
+    document.querySelectorAll(".categoria").forEach(cat => {
+      cat.classList.remove("editable");
+      const clone = cat.cloneNode(true); // remove todos os event listeners
+      cat.replaceWith(clone);
+    });
+  
+    // Resetar botões
+    document.getElementById("saveBtn").style.display = "none";
+    document.getElementById("editBtn").style.display = "inline-block";
+  
+    // Resetar campos
+    form.querySelectorAll("input, textarea").forEach(el => {
+      el.setAttribute("disabled", true);
+    });
   }
   
   function enableEdit() {
@@ -48,6 +72,43 @@ function openDetailsModalFromRow(row) {
     document.getElementById("saveBtn").style.display = "inline-block";
     document.getElementById("editBtn").style.display = "none";
   }
+
+  function enableEdit() {
+    document.querySelectorAll("#editForm input, #editForm textarea").forEach(inp => inp.removeAttribute("disabled"));
+    document.getElementById("saveBtn").style.display = "inline-block";
+    document.getElementById("editBtn").style.display = "none";
+  
+    // Habilita exclusão das categorias
+    document.querySelectorAll(".categoria").forEach(cat => {
+      cat.classList.add("editable");
+      cat.addEventListener("click", function () {
+        if (cat.classList.contains("editable")) {
+          cat.remove();
+        }
+      });
+    });
+  
+    // Mostra campo para adicionar nova categoria
+    document.getElementById("adicionarCategoria").style.display = "block";
+  }
+  
+  function adicionarCategoria() {
+    const container = document.getElementById("categoryContainer");
+    const input = document.getElementById("novaCategoriaInput");
+    const valor = input.value.trim();
+  
+    if (valor) {
+      const span = document.createElement("span");
+      span.className = "categoria editable";
+      span.textContent = valor;
+      span.addEventListener("click", function () {
+        span.remove();
+      });
+      container.appendChild(span);
+      input.value = "";
+    }
+  }
+  
   
   // Event Listeners
   document.addEventListener("DOMContentLoaded", function () {
@@ -78,5 +139,11 @@ function openDetailsModalFromRow(row) {
     });
   
     document.getElementById("editBtn").addEventListener("click", enableEdit);
+
+    document.getElementById("detailsModal").addEventListener("click", function (event) {
+      if (event.target === this) {
+        closeModal();
+      }
+    });
   });
   
