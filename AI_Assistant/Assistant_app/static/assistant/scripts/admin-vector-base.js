@@ -199,6 +199,11 @@ function openDetailsModalFromRow(row) {
         categories: categorias
       };
 
+      if (!isNew) {
+        const id = form.getAttribute("data-id"); // <- agora sim, corretamente
+        data.id = id;
+      }
+
       // Validação básica para novo item
       if (isNew) {
         if (!data.jobTitle || !data.description || !(data.cost || data.hourly || data.min || data.max || data.avg)) {
