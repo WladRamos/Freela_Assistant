@@ -21,6 +21,7 @@ from django.contrib import messages
 from django.utils.timezone import now
 from pathlib import Path
 import chromadb
+import uuid
 
 def login_view(request):
     if request.method == "POST":
@@ -497,3 +498,65 @@ def admin_vector_base(request):
         "documentos": page_obj.object_list,
         "search_query": search_query,
     })
+
+
+@user_passes_test(lambda u: u.tipo_usuario == 'Administrador')
+def admin_adicionar_trabalho(request):
+    if request.method == "POST":
+        try:
+            base_dir = Path(__file__).resolve().parent
+            caminho_persistent_client = base_dir.parent
+            client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+            collection = client.get_collection("Base_de_Trabalhos")
+
+            data = json.loads(request.body)
+
+            job_title = data.get("jobTitle", "").strip()
+            description = data.get("description", "").strip()
+            valores = [
+                data.get("Job_Cost", "").strip(),
+                data.get("Hourly_Rate", "").strip(),
+                data.get("Min_price", "").strip(),
+                data.get("Max_price", "").strip(),
+                data.get("Avg_price", "").strip(),
+            ]
+
+            if not job_title or not description or not any(valores):
+                return JsonResponse({"error": "Preencha o título, descrição e pelo menos um valor de pagamento."}, status=400)
+
+            metadados = {
+                "Job Title": job_title,
+                "EX_level_demand": data.get("exLevel", ""),
+                "Time_Limitation": data.get("timeLimit", ""),
+                "Search_Keyword": data.get("keyword", ""),
+                "Description": description,
+                "Category_1": data.get("Category_1", ""),
+                "Category_2": data.get("Category_2", ""),
+                "Category_3": data.get("Category_3", ""),
+                "Category_4": data.get("Category_4", ""),
+                "Category_5": data.get("Category_5", ""),
+                "Category_6": data.get("Category_6", ""),
+                "Category_7": data.get("Category_7", ""),
+                "Category_8": data.get("Category_8", ""),
+                "Category_9": data.get("Category_9", ""),
+                "Payment_type": data.get("payment", ""),
+                "Job_Cost": data.get("Job_Cost", ""),
+                "Hourly_Rate": data.get("Hourly_Rate", ""),
+                "Currency": data.get("currency", ""),
+                "Min_price": data.get("Min_price", ""),
+                "Max_price": data.get("Max_price", ""),
+                "Avg_price": data.get("Avg_price", "")
+            }
+
+            collection.add(
+                documents=[description],
+                metadatas=[metadados],
+                ids=[str(uuid.uuid4())]
+            )
+
+            return JsonResponse({"success": True, "query": job_title})
+
+        except Exception as e:
+            return JsonResponse({"error": f"Erro ao adicionar trabalho: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método não permitido."}, status=405)

@@ -23,4 +23,6 @@ urlpatterns = [
     path('painel_admin/usuarios/banir/', views.ban_user, name='ban_user'),
     path('painel_admin/usuarios/suspender/', views.suspend_user, name='suspend_user'),
     path("painel_admin/base-vetorial/", views.admin_vector_base, name="admin_vector_base"),
+    path("painel_admin/base-vetorial/adicionar/", views.admin_adicionar_trabalho, name="add_vector_base"),
+    path("painel_admin/base-vetorial/atualizar/", views.admin_atualizar_trabalho, name="update_vector_base"),
 ]

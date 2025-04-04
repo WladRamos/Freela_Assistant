@@ -109,6 +109,27 @@ function openDetailsModalFromRow(row) {
     }
   }
   
+
+  function openEmptyModal() {
+    const modal = document.getElementById("detailsModal");
+    const form = document.getElementById("editForm");
+  
+    // Limpa todos os campos
+    form.reset();
+    document.getElementById("categoryContainer").innerHTML = "";
+    document.getElementById("novaCategoriaInput").value = "";
+  
+    // Ativa o modo de edição
+    form.querySelectorAll("input, textarea").forEach(el => el.removeAttribute("disabled"));
+    document.getElementById("saveBtn").style.display = "inline-block";
+    document.getElementById("editBtn").style.display = "none";
+    document.getElementById("adicionarCategoria").style.display = "block";
+  
+    // Define flag de novo item
+    form.setAttribute("data-new", "true");
+  
+    modal.style.display = "flex";
+  }
   
   // Event Listeners
   document.addEventListener("DOMContentLoaded", function () {
@@ -143,6 +164,69 @@ function openDetailsModalFromRow(row) {
     document.getElementById("detailsModal").addEventListener("click", function (event) {
       if (event.target === this) {
         closeModal();
+      }
+    });
+
+    document.getElementById("addBtn").addEventListener("click", openEmptyModal);
+
+    document.getElementById("editForm").addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      const form = event.target;
+      const isNew = form.getAttribute("data-new") === "true";
+
+      const categorias = Array.from(document.querySelectorAll("#categoryContainer .categoria")).map(span => span.textContent.trim());
+
+      const data = {
+        jobTitle: form.elements["jobTitle"].value.trim(),
+        exLevel: form.elements["exLevel"].value.trim(),
+        timeLimit: form.elements["timeLimit"].value.trim(),
+        keyword: form.elements["keyword"].value.trim(),
+        description: form.elements["description"].value.trim(),
+        payment: form.elements["payment"].value.trim(),
+        cost: form.elements["cost"].value.trim(),
+        hourly: form.elements["hourly"].value.trim(),
+        currency: form.elements["currency"].value.trim(),
+        min: form.elements["min"].value.trim(),
+        max: form.elements["max"].value.trim(),
+        avg: form.elements["avg"].value.trim(),
+        categorias: categorias
+      };
+
+      // Validação básica para novo item
+      if (isNew) {
+        if (!data.jobTitle || !data.description || !(data.cost || data.hourly || data.min || data.max || data.avg)) {
+          alert("Preencha o título, a descrição e pelo menos um campo de valor.");
+          return;
+        }
+      }
+
+      const csrfToken = getCookie("csrftoken");
+      const endpoint = isNew ? "/assistant/admin-vector-add/" : "/assistant/admin-vector-update/";
+
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          alert(result.message);
+          // Redireciona para busca automática do novo título
+          window.location.href = `?q=${encodeURIComponent(data.jobTitle)}`;
+        } else {
+          alert(result.message || "Erro ao salvar.");
+        }
+
+      } catch (error) {
+        alert("Erro ao enviar dados.");
+        console.error(error);
       }
     });
   });

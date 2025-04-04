@@ -16,7 +16,7 @@
     <input type="text" name="q" placeholder="Buscar por título, categoria, etc" value="{{ search_query }}">
     <button type="submit">Buscar</button>
   </form>
-
+  <button type="button" id="addBtn">Adicionar Trabalho</button>
   <form method="post" id="bulkDeleteForm">
     {% csrf_token %}
     <button type="submit" disabled id="deleteSelectedBtn">Excluir Selecionados</button>
@@ -154,7 +154,7 @@
       <div class="modal-actions">
         <button type="button" onclick="closeModal()">Fechar</button>
         <button type="button" id="editBtn">Editar</button>
-        <button type="submit" id="saveBtn" style="display: none;">Salvar Alterações</button>
+        <button type="submit" id="saveBtn" style="display: none;">Salvar</button>
       </div>
     </form>
   </div>
