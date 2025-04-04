@@ -125,88 +125,72 @@ background-color: #e0e0e0;
 
 /* Modal */
 .modal {
-position: fixed;
-inset: 0;
-background-color: rgba(0, 0, 0, 0.4);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 1000;
-}
-
-.modal-content {
-background-color: white;
-padding: 30px;
-border-radius: 10px;
-width: 90%;
-max-width: 600px;
-max-height: 80vh;
-overflow-y: auto;
-box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-.modal-content h2 {
-margin-top: 0;
-margin-bottom: 15px;
-}
-
-.modal-content ul {
-list-style: none;
-padding: 0;
-}
-
-.modal-content li {
-margin-bottom: 8px;
-}
-
-.modal-actions {
-display: flex;
-justify-content: flex-end;
-gap: 10px;
-margin-top: 20px;
-}
-
-.modal-actions button {
-padding: 8px 16px;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-}
-
-.modal-actions button[type="submit"] {
-background-color: #4CAF50;
-color: white;
-}
-
-.modal-actions button[type="submit"]:hover {
-background-color: #45a049;
-}
-
-.modal-actions button[type="button"] {
-background-color: #ccc;
-color: #333;
-}
-
-.modal-actions button[type="button"]:hover {
-background-color: #bbb;
-}
-
-.details-button {
-    padding: 6px 12px;
-    background-color: #e0e0e0;
-    color: #333;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
   
-.details-button:hover {
-    background-color: #d5d5d5;
-}
-
-/* Adiciona estilo para categorias agrupadas */
-.categorias-container {
+  .modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  }
+  
+  .modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  
+  .modal-content ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .modal-content li {
+    margin-bottom: 8px;
+  }
+  
+  .modal-content label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  /* Inputs e textarea uniformizados */
+  .modal-content input[type="text"],
+  .modal-content textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f8f8f8;
+    box-sizing: border-box;
+  }
+  
+  .modal-content input[type="text"]:disabled,
+  .modal-content textarea:disabled {
+    background-color: #f0f0f0;
+    color: #666;
+  }
+  
+  .modal-content textarea {
+    resize: vertical;
+  }
+  
+  /* Categorias agrupadas */
+  .category-container {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
@@ -214,53 +198,70 @@ background-color: #bbb;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 8px;
+    margin-top: 5px;
     margin-bottom: 15px;
-}
-
-.categoria {
-background-color: #e0e0e0;
-color: #333;
-padding: 6px 12px;
-border-radius: 20px;
-font-size: 0.9em;
-}
-
-.modal-content label {
-display: block;
-margin-top: 10px;
-font-weight: bold;
-}
-
-.modal-content input[type="text"] {
-width: 100%;
-padding: 8px;
-margin-top: 5px;
-margin-bottom: 10px;
-border: 1px solid #ccc;
-border-radius: 5px;
-background-color: #f8f8f8;
-}
-
-.modal-content input[type="text"]:disabled {
-background-color: #f0f0f0;
-color: #666;
-}
-
-.modal-actions button {
-padding: 8px 16px;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-}
-
-.modal-actions .edit-button,
-.modal-actions .save-button {
-background-color: #4CAF50;
-color: white;
-margin-left: 10px;
-}
-
-.modal-actions .edit-button:hover,
-.modal-actions .save-button:hover {
-background-color: #45a049;
-}
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .categoria {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+  
+  /* Ações no rodapé do modal */
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .modal-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .modal-actions button[type="submit"],
+  .modal-actions .edit-button,
+  .modal-actions .save-button {
+    background-color: #4CAF50;
+    color: white;
+  }
+  
+  .modal-actions button[type="submit"]:hover,
+  .modal-actions .edit-button:hover,
+  .modal-actions .save-button:hover {
+    background-color: #45a049;
+  }
+  
+  .modal-actions button[type="button"] {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  .modal-actions button[type="button"]:hover {
+    background-color: #bbb;
+  }
+  
+  /* Botão 'Ver Mais' */
+  .details-button {
+    padding: 6px 12px;
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .details-button:hover {
+    background-color: #d5d5d5;
+  }
+  
