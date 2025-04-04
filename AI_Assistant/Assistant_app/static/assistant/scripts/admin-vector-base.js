@@ -36,6 +36,9 @@ function openDetailsModalFromRow(row) {
     document.getElementById("editBtn").style.display = "inline-block";
   
     modal.style.display = "flex";
+
+    form.setAttribute("data-id", row.dataset.id);  // Adiciona o ID do item para atualização
+    form.setAttribute("data-new", "false");
   }
   
   function closeModal() {
@@ -64,6 +67,9 @@ function openDetailsModalFromRow(row) {
     form.querySelectorAll("input, textarea").forEach(el => {
       el.setAttribute("disabled", true);
     });
+
+    form.removeAttribute("data-id");
+    form.removeAttribute("data-new");
   }
   
   function enableEdit() {
@@ -190,7 +196,7 @@ function openDetailsModalFromRow(row) {
         min: form.elements["min"].value.trim(),
         max: form.elements["max"].value.trim(),
         avg: form.elements["avg"].value.trim(),
-        categorias: categorias
+        categories: categorias
       };
 
       // Validação básica para novo item
@@ -202,7 +208,7 @@ function openDetailsModalFromRow(row) {
       }
 
       const csrfToken = getCookie("csrftoken");
-      const endpoint = isNew ? "/assistant/admin-vector-add/" : "/assistant/admin-vector-update/";
+      const endpoint = isNew ? "/painel_admin/base-vetorial/adicionar/" : "/painel_admin/base-vetorial/atualizar/";
 
       try {
         const response = await fetch(endpoint, {

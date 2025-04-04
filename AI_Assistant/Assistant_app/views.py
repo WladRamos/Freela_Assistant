@@ -560,3 +560,56 @@ def admin_adicionar_trabalho(request):
             return JsonResponse({"error": f"Erro ao adicionar trabalho: {str(e)}"}, status=500)
 
     return JsonResponse({"error": "Método não permitido."}, status=405)
+
+
+def admin_atualizar_trabalho(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            id_ = data.get("id")
+            if not id_:
+                return JsonResponse({"success": False, "message": "ID não fornecido."}, status=400)
+
+            categorias = data.get("categories", [])
+
+            metadados = {
+                "Job Title": data.get("jobTitle", ""),
+                "EX_level_demand": data.get("exLevel", ""),
+                "Time_Limitation": data.get("timeLimit", ""),
+                "Search_Keyword": data.get("keyword", ""),
+                "Description": data.get("description", ""),
+                "Category_1": categorias[0] if len(categorias) > 0 else "",
+                "Category_2": categorias[1] if len(categorias) > 1 else "",
+                "Category_3": categorias[2] if len(categorias) > 2 else "",
+                "Category_4": categorias[3] if len(categorias) > 3 else "",
+                "Category_5": categorias[4] if len(categorias) > 4 else "",
+                "Category_6": categorias[5] if len(categorias) > 5 else "",
+                "Category_7": categorias[6] if len(categorias) > 6 else "",
+                "Category_8": categorias[7] if len(categorias) > 7 else "",
+                "Category_9": categorias[8] if len(categorias) > 8 else "",
+                "Payment_type": data.get("payment", ""),
+                "Job_Cost": data.get("cost", ""),
+                "Hourly_Rate": data.get("hourly", ""),
+                "Currency": data.get("currency", ""),
+                "Min_price": data.get("min", ""),
+                "Max_price": data.get("max", ""),
+                "Avg_price": data.get("avg", "")
+            }
+
+            base_dir = Path(__file__).resolve().parent
+            caminho_persistent_client = base_dir.parent
+            client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+            collection = client.get_collection("Base_de_Trabalhos")
+
+            collection.update(
+                ids=[id_],
+                documents=[data.get("description", "")],
+                metadatas=[metadados]
+            )
+
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "Método não permitido."}, status=405)
