@@ -1,148 +1,201 @@
 .profile-container {
-    max-width: 800px;
+    max-width: 900px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 30px 20px;
     font-family: Arial, sans-serif;
-}
-
-.profile-header {
+  }
+  
+  .profile-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-}
-
-.user-icon {
-    width: 50px;
-    height: 50px;
-}
-
-.profile-section {
-    margin-top: 20px;
-}
-
-.profile-box {
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 5px;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .user-icon {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .profile-header h1 {
+    font-size: 2em;
+    margin: 0;
+  }
+  
+  .profile-section {
+    margin-top: 30px;
+  }
+  
+  .profile-section h2 {
+    margin-bottom: 15px;
+    font-size: 1.4em;
+    color: #333;
+  }
+  
+  .profile-box {
     background-color: #f9f9f9;
-    position: relative;
-}
-
-.edit-icon {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .work-title {
     cursor: pointer;
-}
-
-input[readonly] {
-    border: none;
-    background: transparent;
+    padding: 5px 0;
     font-weight: bold;
-}
-
-.skills {
+    transition: color 0.3s;
+  }
+  
+  .work-title:hover {
+    color: #007bff;
+    text-decoration: underline;
+  }
+  
+  .skills {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-}
-
-.skill-tag {
-    background-color: #ddd;
-    padding: 5px 10px;
+  }
+  
+  .skill-tag {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 6px 12px;
     border-radius: 20px;
+    font-size: 0.9em;
+    position: relative;
+    transition: background-color 0.2s;
+  }
+  
+  .skill-tag:hover {
+    background-color: #f8d7da;
     cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-}
-
-.skill-tag:hover {
-    background-color: #bbb;
-}
-
-.hidden {
-    display: none;
-}
-
-.work-title {
-    cursor: pointer;
-    transition: color 0.3s ease-in-out;
-}
-
-.work-title:hover {
-    color: blue;
-    text-decoration: underline;
-}
-
-#work-skills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-#new-work-skill {
-    margin-top: 10px;
-    padding: 5px;
-    width: 80%;
-}
-
-#add-work-skill {
-    padding: 5px 10px;
-    margin-left: 5px;
-}
-
-.modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 50%;
-    max-width: 600px;
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    z-index: 1000;
-}
-
-.modal-content {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.close {
+  }
+  
+  .skill-tag .remove-skill {
+    content: "×";
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: -6px;
+    right: -6px;
+    background-color: #d9534f;
+    color: white;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 18px;
+    font-size: 14px;
+    display: none;
+    font-weight: bold;
+  }
+  
+  .skill-tag:hover .remove-skill {
+    display: block;
+  }
+  
+  
+  .add-skill-btn {
+    padding: 8px 14px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.2em;
     cursor: pointer;
-    font-size: 20px;
-}
-
-.modal-content input,
-.modal-content select,
-.modal-content textarea {
+  }
+  
+  .add-skill-btn:hover {
+    background-color: #45a049;
+  }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 550px;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+  
+  .modal-content h3 {
+    margin-top: 0;
+    font-size: 1.3em;
+  }
+  
+  .modal-content label {
+    margin-top: 10px;
+    display: block;
+    font-weight: bold;
+  }
+  
+  .modal-content input,
+  .modal-content select,
+  .modal-content textarea {
     width: 100%;
     padding: 8px;
     margin-top: 5px;
-    border-radius: 5px;
+    margin-bottom: 15px;
     border: 1px solid #ccc;
-}
-
-#save-skill {
-    padding: 10px;
+    border-radius: 5px;
+  }
+  
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
+  }
+  
+  /* Buttons */
+  .primary-btn {
+    padding: 8px 16px;
     background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-}
-
-#save-skill:hover {
+  }
+  
+  .primary-btn:hover {
     background-color: #45a049;
-}
-
-#add-skill {
-    order: 2; /* Mantém o botão sempre no final */
-}
+  }
+  
+  .delete-btn {
+    padding: 8px 16px;
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    background-color: #b71c1c;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  

@@ -2,99 +2,94 @@
 {% load static %}
 
 {% block css %}
-    <link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'assistant/styles/profile.css' %}">
+  <link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">
+  <link rel="stylesheet" href="{% static 'assistant/styles/profile.css' %}">
 {% endblock %}
 
 {% block content %}
-    {% if user.is_authenticated %}
-        <div class="profile-container">
-            <div class="profile-header">
-                <img src="{% static 'assistant/images/user-icon.png' %}" alt="User Icon" class="user-icon">
-                <h1>Perfil de {{ user.username }}</h1>
-            </div>
+  {% if user.is_authenticated %}
+    <div class="profile-container">
+      <div class="profile-header">
+        <img src="{% static 'assistant/images/user-icon.png' %}" alt="User Icon" class="user-icon">
+        <h1>Perfil de {{ user.username }}</h1>
+      </div>
 
-            <!-- Histórico de Trabalhos -->
-            <section class="profile-section">
-                <h2>Histórico de Trabalhos</h2>
-                <div class="profile-box">
-                    {% for projeto in user.projetos.all %}
-                        <p class="work-title" data-id="{{ projeto.id }}">{{ projeto.titulo }}</p>
-                    {% empty %}
-                        <p>Nenhum trabalho cadastrado.</p>
-                    {% endfor %}
-                    <button id="add-work">Adicionar Trabalho</button>
-                </div>
-            </section>
-
-            <!-- Modal de Edição/Adição de Trabalho -->
-            <div id="work-modal" class="modal hidden">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h3 id="work-modal-title">Editar Trabalho</h3>
-                    <form id="work-form">
-                        <input type="hidden" id="work-id">
-                        <label>Título:</label>
-                        <input type="text" id="work-title">
-                        <label>Descrição:</label>
-                        <textarea id="work-description"></textarea>
-                        <label>Tipo de Pagamento:</label>
-                        <select id="work-payment">
-                            <option value="Hora">Hora</option>
-                            <option value="Fixo">Fixo</option>
-                        </select>
-                        <label>Valor:</label>
-                        <input type="number" id="work-value">
-
-                        <!-- Habilidades do trabalho -->
-                        <label>Habilidades:</label>
-                        <div id="work-skills"></div>
-                        <input type="text" id="new-work-skill" placeholder="Adicionar habilidade">
-                        <button type="button" id="add-work-skill">Adicionar</button>
-
-                        <button type="button" id="save-work">Salvar</button>
-                        <button type="button" id="delete-work" class="delete-button hidden">Excluir Trabalho</button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Preferências de Preços -->
-            <section class="profile-section">
-                <h2>Preferências de Preços</h2>
-                <div class="profile-box">
-                    <p>Preço Fixo: $ <input type="number" name="preco_fixo_min" value="{{ user.preco_fixo_min }}"></p>
-                    <p>Preço por hora: $ <input type="number" name="preco_hora_min" value="{{ user.preco_hora_min }}"></p>
-                    <button id="save-prices">Salvar Preços</button>
-                </div>
-            </section>
-
-            <!-- Habilidades -->
-            <section class="profile-section">
-                <h2>Habilidades</h2>
-                <div class="profile-box skills">
-                    {% for habilidade in user.habilidades.all %}
-                        <span class="skill-tag" data-id="{{ habilidade.habilidade.id }}">{{ habilidade.habilidade.nome }} <span class="remove-skill">x</span></span>
-                    {% empty %}
-                        <p>Nenhuma habilidade cadastrada.</p>
-                    {% endfor %}
-                    <button id="add-skill">+</button>
-                </div>
-            </section>
-
-            <!-- Modal de Adicionar Habilidade -->
-            <div id="skill-modal" class="modal hidden">
-                <div class="modal-content">
-                    <span class="close">&times;</span>
-                    <h3>Adicionar Habilidade</h3>
-                    <input type="text" id="new-skill" placeholder="Digite uma habilidade">
-                    <button type="button" id="save-skill">Adicionar</button>
-                </div>
-            </div>
-
+      <section class="profile-section">
+        <h2>Histórico de Trabalhos</h2>
+        <div class="profile-box">
+          {% for projeto in user.projetos.all %}
+            <p class="work-title" data-id="{{ projeto.id }}">{{ projeto.titulo }}</p>
+          {% empty %}
+            <p>Nenhum trabalho cadastrado.</p>
+          {% endfor %}
+          <button class="primary-btn" id="add-work">Adicionar Trabalho</button>
         </div>
-    {% else %}
-        <h1>Você precisa estar logado para acessar esta página.</h1>
-    {% endif %}
+      </section>
+
+      <div id="work-modal" class="modal hidden">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3 id="work-modal-title">Editar Trabalho</h3>
+          <form id="work-form">
+            <input type="hidden" id="work-id">
+            <label>Título:</label>
+            <input type="text" id="work-title">
+            <label>Descrição:</label>
+            <textarea id="work-description"></textarea>
+            <label>Tipo de Pagamento:</label>
+            <select id="work-payment">
+              <option value="Hora">Hora</option>
+              <option value="Fixo">Fixo</option>
+            </select>
+            <label>Valor:</label>
+            <input type="number" id="work-value">
+
+            <label>Habilidades:</label>
+            <div id="work-skills"></div>
+            <input type="text" id="new-work-skill" placeholder="Adicionar habilidade">
+            <button type="button" class="primary-btn" id="add-work-skill">Adicionar</button>
+
+            <div class="modal-actions">
+              <button type="button" class="primary-btn" id="save-work">Salvar</button>
+              <button type="button" class="delete-btn hidden" id="delete-work">Excluir Trabalho</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <section class="profile-section">
+        <h2>Preferências de Preços</h2>
+        <div class="profile-box">
+          <p>Preço Fixo: $ <input type="number" name="preco_fixo_min" value="{{ user.preco_fixo_min }}"></p>
+          <p>Preço por hora: $ <input type="number" name="preco_hora_min" value="{{ user.preco_hora_min }}"></p>
+          <button class="primary-btn" id="save-prices">Salvar Preços</button>
+        </div>
+      </section>
+
+      <section class="profile-section">
+        <h2>Habilidades</h2>
+        <div class="profile-box skills">
+          {% for habilidade in user.habilidades.all %}
+            <span class="skill-tag" data-id="{{ habilidade.habilidade.id }}">{{ habilidade.habilidade.nome }} <span class="remove-skill">x</span></span>
+          {% empty %}
+            <p>Nenhuma habilidade cadastrada.</p>
+          {% endfor %}
+          <button class="add-skill-btn" id="add-skill">+</button>
+        </div>
+      </section>
+
+      <div id="skill-modal" class="modal hidden">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h3>Adicionar Habilidade</h3>
+          <input type="text" id="new-skill" placeholder="Digite uma habilidade">
+          <button type="button" class="primary-btn" id="save-skill">Adicionar</button>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <h1>Você precisa estar logado para acessar esta página.</h1>
+  {% endif %}
 {% endblock %}
 
 {% block script %}
