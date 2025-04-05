@@ -16,11 +16,14 @@
     <input type="text" name="q" placeholder="Buscar por título, categoria, etc" value="{{ search_query }}">
     <button type="submit">Buscar</button>
   </form>
-  <button type="button" id="addBtn">Adicionar Trabalho</button>
-  <form method="post" id="bulkDeleteForm">
-    {% csrf_token %}
-    <button type="submit" disabled id="deleteSelectedBtn">Excluir Selecionados</button>
-  </form>
+
+  <div class="action-buttons">
+    <button type="button" id="addBtn">Adicionar Trabalho</button>
+    <form method="post" id="bulkDeleteForm">
+      {% csrf_token %}
+      <button type="submit" disabled id="deleteSelectedBtn">Excluir Selecionados</button>
+    </form>
+  </div>
 </div>
 
 <table border="1" cellpadding="10" cellspacing="0">

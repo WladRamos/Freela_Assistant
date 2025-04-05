@@ -556,7 +556,7 @@ def admin_adicionar_trabalho(request):
                 ids=[str(uuid.uuid4())]
             )
 
-            return JsonResponse({"success": True, "message": "Trabalho adicionado com sucesso.", "query": job_title})
+            return JsonResponse({"success": True, "message": "Trabalho atualizado com sucesso."})
 
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Erro ao adicionar trabalho: {str(e)}"}, status=500)
@@ -610,7 +610,7 @@ def admin_atualizar_trabalho(request):
                 metadatas=[metadados]
             )
 
-            return JsonResponse({"success": True})
+            return JsonResponse({"success": True, "message": "Trabalho adicionado com sucesso."})
 
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)}, status=500)

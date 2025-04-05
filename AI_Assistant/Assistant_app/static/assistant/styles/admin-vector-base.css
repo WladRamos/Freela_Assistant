@@ -13,12 +13,12 @@ margin-bottom: 20px;
 
 /* Alinhamento da barra de busca e botão de exclusão */
 .top-controls {
-display: flex;
-justify-content: space-between;
-align-items: center;
-flex-wrap: wrap;
-gap: 15px;
-margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .top-controls form {
@@ -36,21 +36,35 @@ flex: 1;
 min-width: 200px;
 }
 
-.search-form button,
-#bulkDeleteForm button {
-padding: 8px 16px;
-background-color: #4CAF50;
-color: white;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-transition: background-color 0.3s;
-}
-
-.search-form button:hover,
-#bulkDeleteForm button:hover:enabled {
-background-color: #45a049;
-}
+/* Botão de busca - continua verde */
+.search-form button {
+    padding: 8px 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .search-form button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Botão de excluir - vermelho */
+  #bulkDeleteForm button {
+    padding: 8px 16px;
+    background-color: #f44336; /* tom de vermelho */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #bulkDeleteForm button:hover:enabled {
+    background-color: #d32f2f;
+  }
 
 #bulkDeleteForm button:disabled {
 background-color: #ccc;
@@ -321,16 +335,21 @@ background-color: #e0e0e0;
   }
   
 
+.action-buttons {
+    display: flex;
+    gap: 10px;
+}
+
 #addBtn {
     padding: 8px 16px;
-    background-color: #2196F3;
+    background-color: #4CAF50;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
-}
+  }
   
-#addBtn:hover {
-    background-color: #1976D2;
-}
+  #addBtn:hover {
+    background-color: #45a049;
+  }
