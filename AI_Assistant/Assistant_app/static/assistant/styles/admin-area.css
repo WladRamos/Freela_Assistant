@@ -1,0 +1,36 @@
+.admin-title {
+    font-size: 2em;
+    margin-bottom: 50px;
+    color: #333;
+    text-align: center;
+  }
+  
+  .admin-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  
+  .admin-buttons a {
+    text-decoration: none;
+  }
+  
+  .admin-btn {
+    padding: 12px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    text-align: center;
+  }
+  
+  .admin-btn:hover {
+    background-color: #45a049;
+  }
+  

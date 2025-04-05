@@ -2,16 +2,22 @@
 {% load static %}
 
 {% block title %}Área Administrativa{% endblock %}
-{% block css %}<link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'assistant/styles/styles.css' %}">
+<link rel="stylesheet" href="{% static 'assistant/styles/admin-area.css' %}">
+{% endblock %}
 
 {% block content %}
-    <h1>ADMIN AREA</h1>
-    
+<h1 class="admin-title">Área Administrativa</h1>
+
+<div class="admin-buttons">
     <a href="{% url 'admin_user_list' %}">
-        <button>Gerenciar Usuários</button>
+        <button class="admin-btn">Gerenciar Usuários</button>
     </a>
 
     <a href="{% url 'admin_vector_base' %}">
-        <button>Gerenciar Bases de Dados</button>
+        <button class="admin-btn">Gerenciar Bases de Dados</button>
     </a>
+</div>
 {% endblock %}
