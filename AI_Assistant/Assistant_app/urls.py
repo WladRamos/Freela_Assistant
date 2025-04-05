@@ -25,4 +25,5 @@ urlpatterns = [
     path("painel_admin/base-vetorial/", views.admin_vector_base, name="admin_vector_base"),
     path("painel_admin/base-vetorial/adicionar/", views.admin_adicionar_trabalho, name="add_vector_base"),
     path("painel_admin/base-vetorial/atualizar/", views.admin_atualizar_trabalho, name="update_vector_base"),
+    path("painel_admin/base-vetorial/deletar/", views.admin_deletar_trabalhos, name="delete_vector_base"),
 ]

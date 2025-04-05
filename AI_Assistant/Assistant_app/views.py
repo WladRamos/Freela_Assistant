@@ -556,7 +556,7 @@ def admin_adicionar_trabalho(request):
                 ids=[str(uuid.uuid4())]
             )
 
-            return JsonResponse({"success": True, "message": "Trabalho atualizado com sucesso."})
+            return JsonResponse({"success": True, "message": "Trabalho adicionado com sucesso."})
 
         except Exception as e:
             return JsonResponse({"success": False, "message": f"Erro ao adicionar trabalho: {str(e)}"}, status=500)
@@ -610,9 +610,34 @@ def admin_atualizar_trabalho(request):
                 metadatas=[metadados]
             )
 
-            return JsonResponse({"success": True, "message": "Trabalho adicionado com sucesso."})
+            return JsonResponse({"success": True, "message": "Trabalho atualizado com sucesso."})
 
         except Exception as e:
             return JsonResponse({"success": False, "message": str(e)}, status=500)
+
+    return JsonResponse({"success": False, "message": "Método não permitido."}, status=405)
+
+
+@user_passes_test(lambda u: u.tipo_usuario == 'Administrador')
+def admin_deletar_trabalhos(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            ids = data.get("ids", [])
+
+            if not ids:
+                return JsonResponse({"success": False, "message": "Nenhum ID fornecido."}, status=400)
+
+            base_dir = Path(__file__).resolve().parent
+            caminho_persistent_client = base_dir.parent
+            client = chromadb.PersistentClient(path=str(caminho_persistent_client))
+            collection = client.get_collection("Base_de_Trabalhos")
+
+            collection.delete(ids=ids)
+
+            return JsonResponse({"success": True, "message": "Trabalhos excluídos com sucesso."})
+
+        except Exception as e:
+            return JsonResponse({"success": False, "message": f"Erro: {str(e)}"}, status=500)
 
     return JsonResponse({"success": False, "message": "Método não permitido."}, status=405)

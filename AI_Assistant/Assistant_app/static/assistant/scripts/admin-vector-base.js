@@ -142,6 +142,44 @@ function openDetailsModalFromRow(row) {
     const selectAll = document.getElementById("selectAll");
     const checkboxes = document.querySelectorAll(".selectCheckbox");
     const deleteBtn = document.getElementById("deleteSelectedBtn");
+
+    deleteBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+    
+      const confirmDelete = confirm("Tem certeza que deseja excluir os trabalhos selecionados?");
+      if (!confirmDelete) return;
+    
+      const selectedCheckboxes = document.querySelectorAll(".selectCheckbox:checked");
+      
+      const ids = Array.from(selectedCheckboxes).map(cb => cb.value);
+    
+      const csrfToken = getCookie("csrftoken");
+    
+      try {
+        const response = await fetch("/painel_admin/base-vetorial/deletar/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": csrfToken
+          },
+          body: JSON.stringify({ ids })
+        });
+    
+        const result = await response.json();
+    
+        if (result.success) {
+          alert(result.message);
+          window.location.reload(); // atualiza a tabela
+        } else {
+          alert(result.message || "Erro ao excluir os itens.");
+        }
+    
+      } catch (error) {
+        alert("Erro ao enviar requisição de exclusão.");
+        console.error(error);
+      }
+    });
+    
   
     selectAll.addEventListener("change", function () {
       checkboxes.forEach(cb => cb.checked = selectAll.checked);
