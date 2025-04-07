@@ -26,32 +26,42 @@
         </div>
       </section>
 
+      <!-- Modal -->
       <div id="work-modal" class="modal hidden">
         <div class="modal-content">
-          <span class="close">&times;</span>
-          <h3 id="work-modal-title">Editar Trabalho</h3>
+          <h3 id="work-modal-title">Detalhes do Trabalho</h3>
           <form id="work-form">
             <input type="hidden" id="work-id">
-            <label>Título:</label>
-            <input type="text" id="work-title">
-            <label>Descrição:</label>
-            <textarea id="work-description"></textarea>
-            <label>Tipo de Pagamento:</label>
-            <select id="work-payment">
+
+            <label for="work-title">Título:</label>
+            <input type="text" id="work-title" disabled>
+
+            <label for="work-description">Descrição:</label>
+            <textarea id="work-description" disabled></textarea>
+
+            <label for="work-payment">Tipo de Pagamento:</label>
+            <select id="work-payment" disabled>
               <option value="Hora">Hora</option>
               <option value="Fixo">Fixo</option>
             </select>
-            <label>Valor:</label>
-            <input type="number" id="work-value">
+
+            <label for="work-value">Valor:</label>
+            <input type="number" id="work-value" disabled>
 
             <label>Habilidades:</label>
-            <div id="work-skills"></div>
-            <input type="text" id="new-work-skill" placeholder="Adicionar habilidade">
-            <button type="button" class="primary-btn" id="add-work-skill">Adicionar</button>
+            <div id="work-skills" class="skill-container"></div>
+
+            <!-- Campo de adicionar nova habilidade -->
+            <div id="add-skill-container" class="hidden">
+              <input type="text" id="new-work-skill" placeholder="Adicionar habilidade">
+              <button type="button" class="primary-btn" id="add-work-skill">Adicionar</button>
+            </div>
 
             <div class="modal-actions">
-              <button type="button" class="primary-btn" id="save-work">Salvar</button>
-              <button type="button" class="delete-btn hidden" id="delete-work">Excluir Trabalho</button>
+              <button type="button" class="gray-btn close" onclick="fecharModal()">Fechar</button>
+              <button type="button" class="gray-btn" id="edit-work">Editar</button>
+              <button type="button" class="primary-btn" id="save-work" style="display: none;">Salvar</button>
+              <button type="button" class="delete-btn" id="delete-work">Excluir</button>
             </div>
           </form>
         </div>
@@ -78,6 +88,7 @@
         </div>
       </section>
 
+      <!-- Modal de Habilidade -->
       <div id="skill-modal" class="modal hidden">
         <div class="modal-content">
           <span class="close">&times;</span>
@@ -93,5 +104,5 @@
 {% endblock %}
 
 {% block script %}
-<script src="{% static 'assistant/scripts/profile.js' %}"></script>
+  <script src="{% static 'assistant/scripts/profile.js' %}"></script>
 {% endblock %}
