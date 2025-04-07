@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            const skillsContainer = document.querySelector(".profile-box.skills");
+            const skillsContainer = document.querySelector(".profile-box.skills .skills");
             let noSkillsMessage = skillsContainer.querySelector("p");
             if (noSkillsMessage) noSkillsMessage.remove();
 

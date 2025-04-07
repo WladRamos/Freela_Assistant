@@ -33,10 +33,37 @@
   }
   
   .profile-box {
+    width: 100%;
+    max-width: 550px;
+    min-width: 550px;
+    box-sizing: border-box;
     background-color: #f9f9f9;
     padding: 20px;
     border: 1px solid #ddd;
     border-radius: 8px;
+  }
+
+  .profile-box.skills {
+    box-sizing: border-box;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  
+  .profile-box.skills .skill-tag,
+  .profile-box.skills .add-skill-btn {
+    max-width: 60%;
+    word-break: break-word;
+  }
+  
+  .profile-box.skills .skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .work-title {
@@ -72,6 +99,10 @@
     font-size: 0.9em;
     position: relative;
     transition: background-color 0.2s;
+    max-width: 120px;
+    flex-shrink: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
   
   /* HOVER: Modal de trabalho (requer .editable) */

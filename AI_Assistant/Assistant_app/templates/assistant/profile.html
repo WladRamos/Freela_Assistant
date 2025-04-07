@@ -83,14 +83,16 @@
     <section class="profile-section">
         <h2>Habilidades</h2>
         <div class="profile-box skills">
-        {% for habilidade in user.habilidades.all %}
-            <span class="skill-tag perfil" data-id="{{ habilidade.habilidade.id }}">
-            {{ habilidade.habilidade.nome }} <span class="remove-skill">x</span>
-            </span>
-        {% empty %}
-            <p>Nenhuma habilidade cadastrada.</p>
-        {% endfor %}
-        <button class="add-skill-btn" id="add-skill">+</button>
+            <div class="skills">
+              {% for habilidade in user.habilidades.all %}
+                <span class="skill-tag perfil" data-id="{{ habilidade.habilidade.id }}">
+                  {{ habilidade.habilidade.nome }} <span class="remove-skill">x</span>
+                </span>
+              {% empty %}
+                <p>Nenhuma habilidade cadastrada.</p>
+              {% endfor %}
+              <button class="add-skill-btn" id="add-skill">+</button>
+            </div>
         </div>
     </section>
 
