@@ -2,14 +2,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Abrir modal para adicionar novo trabalho
     document.getElementById("add-work").addEventListener("click", function () {
-      limparCamposTrabalho();
-      document.getElementById("work-modal-title").innerText = "Adicionar Trabalho";
-      document.getElementById("delete-work").classList.add("hidden");
-      document.getElementById("save-work").style.display = "inline-block";
-      document.getElementById("edit-work").style.display = "none";
-      document.getElementById("add-skill-container").classList.remove("hidden");
-      document.getElementById("work-modal").classList.remove("hidden");
-    });
+        limparCamposTrabalho();
+        desbloquearCampos();
+      
+        document.getElementById("work-modal-title").innerText = "Adicionar Trabalho";
+        document.getElementById("delete-work").classList.add("hidden");
+        document.getElementById("save-work").style.display = "inline-block";
+        document.getElementById("edit-work").style.display = "none";
+        document.getElementById("add-skill-container").classList.remove("hidden");
+        document.getElementById("work-modal").classList.remove("hidden");
+      });
 
     // Botão de fechar modal de trabalho
     document.getElementById("close-work-modal").addEventListener("click", function () {
