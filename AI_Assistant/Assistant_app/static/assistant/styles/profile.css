@@ -318,3 +318,46 @@
   .hidden {
     display: none !important; 
   }
+
+  .price-field {
+    margin-bottom: 15px;
+  }
+  
+  .price-field label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #333;
+  }
+  
+  .price-input {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .price-input span {
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border-right: 1px solid #ccc;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  .price-input input {
+    flex: 1;
+    padding: 8px 10px;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    background-color: white;
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
