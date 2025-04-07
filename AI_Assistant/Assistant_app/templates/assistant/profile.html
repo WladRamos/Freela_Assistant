@@ -95,15 +95,16 @@
     </section>
 
       <!-- Modal de Adicionar Habilidade -->
-      <div id="skill-modal" class="modal hidden">
-        <div class="modal-content">
-          <span class="close">&times;</span>
-          <h3>Adicionar Habilidade</h3>
-          <input type="text" id="new-skill" placeholder="Digite uma habilidade">
-          <button type="button" class="primary-btn" id="save-skill">Adicionar</button>
+        <div id="skill-modal" class="modal hidden">
+            <div class="modal-content">
+            <h3>Adicionar Habilidade</h3>
+            <input type="text" id="new-skill" placeholder="Digite uma habilidade">
+            <div class="modal-actions">
+                <button type="button" class="secondary-btn" id="close-skill-modal">Fechar</button>
+                <button type="button" class="primary-btn" id="save-skill">Adicionar</button>
+            </div>
+            </div>
         </div>
-      </div>
-    </div>
   {% else %}
     <h1>Você precisa estar logado para acessar esta página.</h1>
   {% endif %}

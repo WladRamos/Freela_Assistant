@@ -212,17 +212,22 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            const skillsContainer = document.querySelector(".skills");
-            const addSkillButton = document.getElementById("add-skill");
-            let noSkillsMessage = document.querySelector(".skills p");
+            const skillsContainer = document.querySelector(".profile-box.skills");
+            let noSkillsMessage = skillsContainer.querySelector("p");
             if (noSkillsMessage) noSkillsMessage.remove();
-  
+
             const tag = document.createElement("span");
-            tag.className = "skill-tag";
+            tag.className = "skill-tag perfil";
             tag.dataset.id = data.habilidade_id;
             tag.innerHTML = `${skillName} <span class="remove-skill">x</span>`;
-  
+
+            // Adiciona a nova skill antes do botão, se ele existir
+            const addSkillButton = skillsContainer.querySelector("#add-skill");
+            if (addSkillButton) {
             skillsContainer.insertBefore(tag, addSkillButton);
+            } else {
+            skillsContainer.appendChild(tag);
+            }
             document.getElementById("skill-modal").classList.add("hidden");
           } else {
             alert("Erro ao adicionar habilidade: " + data.error);
@@ -266,6 +271,11 @@ document.addEventListener("DOMContentLoaded", function () {
         this.closest(".modal").classList.add("hidden");
       });
     });
+
+    // Botão "Fechar" do modal de habilidade
+    document.getElementById("close-skill-modal").addEventListener("click", function () {
+        document.getElementById("skill-modal").classList.add("hidden");
+    });
   
     // Funções utilitárias
     function limparCamposTrabalho() {
@@ -292,6 +302,28 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById(id).removeAttribute("disabled");
       });
     }
+
+    document.querySelectorAll(".modal").forEach(modal => {
+        modal.addEventListener("click", function (event) {
+          // Se clicou diretamente no fundo do modal (e não dentro do conteúdo)
+          if (event.target === modal) {
+            modal.classList.add("hidden");
+      
+            // Extra: se for o modal de trabalho, também limpa e bloqueia
+            if (modal.id === "work-modal") {
+              limparCamposTrabalho();
+              bloquearCampos();
+      
+              const saveBtn = document.getElementById("save-work");
+              saveBtn.classList.remove("show");
+              saveBtn.classList.add("hidden");
+      
+              document.getElementById("edit-work").style.display = "inline-block";
+              document.getElementById("add-skill-container").classList.add("hidden");
+            }
+          }
+        });
+      });
   
   });
   
