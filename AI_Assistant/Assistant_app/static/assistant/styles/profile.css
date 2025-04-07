@@ -74,10 +74,24 @@
     transition: background-color 0.2s;
   }
   
-  /* Apenas tags editáveis exibem hover */
-  .skill-tag.editable:hover {
+  /* HOVER: Modal de trabalho (requer .editable) */
+.skill-tag.editable:hover {
     background-color: #f8d7da;
     cursor: pointer;
+  }
+  
+  .skill-tag.editable:hover .remove-skill {
+    display: block;
+  }
+  
+  /* HOVER: Habilidades do perfil (mostra o X sempre no hover) */
+  .skill-tag.perfil:hover {
+    background-color: #f8d7da;
+    cursor: pointer;
+  }
+  
+  .skill-tag.perfil:hover .remove-skill {
+    display: block;
   }
   
   .skill-tag .remove-skill {
