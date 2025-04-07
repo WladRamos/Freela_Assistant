@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // Abrir modal para adicionar novo trabalho
     document.getElementById("add-work").addEventListener("click", function () {
       limparCamposTrabalho();
-      desbloquearCampos();
       document.getElementById("work-modal-title").innerText = "Adicionar Trabalho";
       document.getElementById("delete-work").classList.add("hidden");
       document.getElementById("save-work").style.display = "inline-block";
@@ -11,8 +10,18 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("add-skill-container").classList.remove("hidden");
       document.getElementById("work-modal").classList.remove("hidden");
     });
+
+    // Botão de fechar modal de trabalho
+    document.getElementById("close-work-modal").addEventListener("click", function () {
+        limparCamposTrabalho();
+        bloquearCampos();
+        document.getElementById("save-work").style.display = "none";
+        document.getElementById("edit-work").style.display = "inline-block";
+        document.getElementById("add-skill-container").classList.add("hidden");
+        document.getElementById("work-modal").classList.add("hidden");
+      });
   
-    // Abrir modal para editar trabalho existente
+    // Abrir modal para visualizar/editar trabalho existente
     document.querySelectorAll(".work-title").forEach(item => {
       item.addEventListener("click", function () {
         const workId = this.dataset.id;
@@ -48,22 +57,30 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   
-    // Ativar edição
+    // Editar trabalho existente
     document.getElementById("edit-work").addEventListener("click", function () {
-      desbloquearCampos();
-      document.getElementById("save-work").style.display = "inline-block";
-      document.getElementById("edit-work").style.display = "none";
-      document.getElementById("add-skill-container").classList.remove("hidden");
-    });
-  
-    // Fechar modal
-    document.querySelectorAll(".close").forEach(closeBtn => {
-      closeBtn.addEventListener("click", function () {
-        fecharModal();
+        desbloquearCampos();
+      
+        // Exibir botões e input de nova habilidade
+        const saveBtn = document.getElementById("save-work");
+        const editBtn = document.getElementById("edit-work");
+        const addSkillContainer = document.getElementById("add-skill-container");
+      
+        if (saveBtn && editBtn && addSkillContainer) {
+          saveBtn.style.display = "inline-block";
+          editBtn.style.display = "none";
+          addSkillContainer.classList.remove("hidden");
+      
+          // Ativar edição nas tags
+          document.querySelectorAll("#work-skills .skill-tag").forEach(tag => {
+            tag.classList.add("editable");
+          });
+        } else {
+          console.warn("Elemento(s) não encontrado(s):", { saveBtn, editBtn, addSkillContainer });
+        }
       });
-    });
   
-    // Salvar ou editar trabalho
+    // Salvar trabalho
     document.getElementById("save-work").addEventListener("click", function () {
       let work = {
         id: document.getElementById("work-id").value,
@@ -120,17 +137,26 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Erro ao excluir trabalho:", error));
     });
   
-    // Adicionar nova habilidade no modal
-    document.getElementById("add-work-skill").addEventListener("click", adicionarSkill);
+    // Adicionar nova habilidade
+    document.getElementById("add-work-skill").addEventListener("click", function () {
+      const newSkill = document.getElementById("new-work-skill").value.trim().toUpperCase();
+      if (newSkill) {
+        const tag = document.createElement("span");
+        tag.className = "skill-tag editable";
+        tag.innerHTML = `${newSkill} <span class="remove-skill">x</span>`;
+        document.getElementById("work-skills").appendChild(tag);
+        document.getElementById("new-work-skill").value = "";
+      }
+    });
   
-    // Remover habilidade no modal
+    // Remover habilidade ao clicar no "x"
     document.addEventListener("click", function (event) {
       if (event.target.classList.contains("remove-skill")) {
         event.target.parentElement.remove();
       }
     });
   
-    // Salvar preços
+    // Salvar preferências de preço
     document.getElementById("save-prices").addEventListener("click", function () {
       let formData = {
         preco_fixo_min: document.querySelector("[name='preco_fixo_min']").value,
@@ -156,57 +182,52 @@ document.addEventListener("DOMContentLoaded", function () {
         .catch(error => console.error("Erro ao atualizar preços:", error));
     });
   
-    // Adicionar nova habilidade ao perfil
+    // Abrir modal de adicionar habilidade ao perfil
     document.getElementById("add-skill").addEventListener("click", function () {
       document.getElementById("new-skill").value = "";
       document.getElementById("skill-modal").classList.remove("hidden");
     });
   
-    // Salvar nova habilidade no banco
+    // Adicionar habilidade ao perfil
     document.getElementById("save-skill").addEventListener("click", function () {
       let skillName = document.getElementById("new-skill").value.trim().toUpperCase();
+      if (!skillName) return;
   
-      if (skillName) {
-        fetch("/adicionar_habilidade/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCookie("csrftoken")
-          },
-          body: JSON.stringify({ nome: skillName })
+      fetch("/adicionar_habilidade/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCookie("csrftoken")
+        },
+        body: JSON.stringify({ nome: skillName })
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            const skillsContainer = document.querySelector(".skills");
+            const addSkillButton = document.getElementById("add-skill");
+            let noSkillsMessage = document.querySelector(".skills p");
+            if (noSkillsMessage) noSkillsMessage.remove();
+  
+            const tag = document.createElement("span");
+            tag.className = "skill-tag";
+            tag.dataset.id = data.habilidade_id;
+            tag.innerHTML = `${skillName} <span class="remove-skill">x</span>`;
+  
+            skillsContainer.insertBefore(tag, addSkillButton);
+            document.getElementById("skill-modal").classList.add("hidden");
+          } else {
+            alert("Erro ao adicionar habilidade: " + data.error);
+          }
         })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const skillsContainer = document.querySelector(".skills");
-              const addSkillButton = document.getElementById("add-skill");
-  
-              let noSkillsMessage = document.querySelector(".skills p");
-              if (noSkillsMessage) {
-                noSkillsMessage.remove();
-              }
-  
-              const skillTag = document.createElement("span");
-              skillTag.className = "skill-tag";
-              skillTag.dataset.id = data.habilidade_id;
-              skillTag.innerHTML = `${skillName} <span class="remove-skill">x</span>`;
-              skillsContainer.insertBefore(skillTag, addSkillButton);
-  
-              document.getElementById("new-skill").value = "";
-              document.getElementById("skill-modal").classList.add("hidden");
-            } else {
-              alert("Erro ao adicionar habilidade: " + data.error);
-            }
-          })
-          .catch(error => console.error("Erro ao adicionar habilidade:", error));
-      }
+        .catch(error => console.error("Erro ao adicionar habilidade:", error));
     });
   
     // Remover habilidade do perfil
     document.addEventListener("click", function (event) {
       if (event.target.classList.contains("remove-skill")) {
-        const skillElement = event.target.parentElement;
-        const skillId = skillElement.dataset.id;
+        const tag = event.target.parentElement;
+        const skillId = tag.dataset.id;
   
         fetch(`/remover_habilidade/${skillId}/`, {
           method: "DELETE",
@@ -217,13 +238,11 @@ document.addEventListener("DOMContentLoaded", function () {
           .then(response => response.json())
           .then(data => {
             if (data.success) {
-              skillElement.remove();
-              let remainingSkills = document.querySelectorAll(".skills .skill-tag").length;
-              if (remainingSkills === 0) {
-                const skillsContainer = document.querySelector(".skills");
-                let noSkillsMessage = document.createElement("p");
-                noSkillsMessage.textContent = "Nenhuma habilidade cadastrada.";
-                skillsContainer.insertBefore(noSkillsMessage, document.getElementById("add-skill"));
+              tag.remove();
+              if (document.querySelectorAll(".skills .skill-tag").length === 0) {
+                const p = document.createElement("p");
+                p.textContent = "Nenhuma habilidade cadastrada.";
+                document.querySelector(".skills").insertBefore(p, document.getElementById("add-skill"));
               }
             } else {
               alert("Erro ao remover habilidade: " + data.error);
@@ -232,44 +251,39 @@ document.addEventListener("DOMContentLoaded", function () {
           .catch(error => console.error("Erro ao remover habilidade:", error));
       }
     });
-  });
   
-  // Funções auxiliares
-  function limparCamposTrabalho() {
-    document.getElementById("work-id").value = "";
-    document.getElementById("work-title").value = "";
-    document.getElementById("work-description").value = "";
-    document.getElementById("work-payment").value = "Hora";
-    document.getElementById("work-value").value = "";
-    document.getElementById("work-skills").innerHTML = "";
-    document.getElementById("new-work-skill").value = "";
-  }
-  
-  function bloquearCampos() {
-    ["work-title", "work-description", "work-payment", "work-value"].forEach(id => {
-      document.getElementById(id).setAttribute("disabled", true);
+    // Fechar modais
+    document.querySelectorAll(".close").forEach(btn => {
+      btn.addEventListener("click", function () {
+        this.closest(".modal").classList.add("hidden");
+      });
     });
-  }
   
-  function desbloquearCampos() {
-    ["work-title", "work-description", "work-payment", "work-value"].forEach(id => {
-      document.getElementById(id).removeAttribute("disabled");
-    });
-  }
-  
-  function fecharModal() {
-    document.getElementById("work-modal").classList.add("hidden");
-  }
-  
-  function adicionarSkill() {
-    const input = document.getElementById("new-work-skill");
-    const valor = input.value.trim().toUpperCase();
-    if (valor) {
-      const tag = document.createElement("span");
-      tag.className = "skill-tag";
-      tag.innerHTML = `${valor} <span class="remove-skill">x</span>`;
-      document.getElementById("work-skills").appendChild(tag);
-      input.value = "";
+    // Funções utilitárias
+    function limparCamposTrabalho() {
+      document.getElementById("work-id").value = "";
+      document.getElementById("work-title").value = "";
+      document.getElementById("work-description").value = "";
+      document.getElementById("work-payment").value = "Hora";
+      document.getElementById("work-value").value = "";
+      document.getElementById("work-skills").innerHTML = "";
+      document.getElementById("new-work-skill").value = "";
     }
-  }
+  
+    function bloquearCampos() {
+      ["work-title", "work-description", "work-payment", "work-value"].forEach(id => {
+        document.getElementById(id).setAttribute("disabled", true);
+      });
+      document.querySelectorAll("#work-skills .skill-tag").forEach(tag => {
+        tag.classList.remove("editable");
+      });
+    }
+  
+    function desbloquearCampos() {
+      ["work-title", "work-description", "work-payment", "work-value"].forEach(id => {
+        document.getElementById(id).removeAttribute("disabled");
+      });
+    }
+  
+  });
   

@@ -14,6 +14,7 @@
         <h1>Perfil de {{ user.username }}</h1>
       </div>
 
+      <!-- Histórico de Trabalhos -->
       <section class="profile-section">
         <h2>Histórico de Trabalhos</h2>
         <div class="profile-box">
@@ -26,47 +27,47 @@
         </div>
       </section>
 
-      <!-- Modal -->
+      <!-- Modal de Trabalho -->
       <div id="work-modal" class="modal hidden">
         <div class="modal-content">
           <h3 id="work-modal-title">Detalhes do Trabalho</h3>
           <form id="work-form">
             <input type="hidden" id="work-id">
 
-            <label for="work-title">Título:</label>
+            <label>Título:</label>
             <input type="text" id="work-title" disabled>
 
-            <label for="work-description">Descrição:</label>
+            <label>Descrição:</label>
             <textarea id="work-description" disabled></textarea>
 
-            <label for="work-payment">Tipo de Pagamento:</label>
+            <label>Tipo de Pagamento:</label>
             <select id="work-payment" disabled>
               <option value="Hora">Hora</option>
               <option value="Fixo">Fixo</option>
             </select>
 
-            <label for="work-value">Valor:</label>
+            <label>Valor:</label>
             <input type="number" id="work-value" disabled>
 
             <label>Habilidades:</label>
-            <div id="work-skills" class="skill-container"></div>
+            <div id="work-skills" class="skills"></div>
 
-            <!-- Campo de adicionar nova habilidade -->
             <div id="add-skill-container" class="hidden">
               <input type="text" id="new-work-skill" placeholder="Adicionar habilidade">
-              <button type="button" class="primary-btn" id="add-work-skill">Adicionar</button>
+              <button type="button" id="add-work-skill">Adicionar</button>
             </div>
 
             <div class="modal-actions">
-              <button type="button" class="gray-btn close" onclick="fecharModal()">Fechar</button>
-              <button type="button" class="gray-btn" id="edit-work">Editar</button>
-              <button type="button" class="primary-btn" id="save-work" style="display: none;">Salvar</button>
+              <button type="button" class="secondary-btn" id="close-work-modal">Fechar</button>
+              <button type="button" class="secondary-btn" id="edit-work">Editar</button>
+              <button type="button" class="primary-btn hidden" id="save-work">Salvar</button>
               <button type="button" class="delete-btn" id="delete-work">Excluir</button>
             </div>
           </form>
         </div>
       </div>
 
+      <!-- Preferências de Preços -->
       <section class="profile-section">
         <h2>Preferências de Preços</h2>
         <div class="profile-box">
@@ -76,11 +77,14 @@
         </div>
       </section>
 
+      <!-- Habilidades -->
       <section class="profile-section">
         <h2>Habilidades</h2>
         <div class="profile-box skills">
           {% for habilidade in user.habilidades.all %}
-            <span class="skill-tag" data-id="{{ habilidade.habilidade.id }}">{{ habilidade.habilidade.nome }} <span class="remove-skill">x</span></span>
+            <span class="skill-tag" data-id="{{ habilidade.habilidade.id }}">
+              {{ habilidade.habilidade.nome }} <span class="remove-skill">x</span>
+            </span>
           {% empty %}
             <p>Nenhuma habilidade cadastrada.</p>
           {% endfor %}
@@ -88,7 +92,7 @@
         </div>
       </section>
 
-      <!-- Modal de Habilidade -->
+      <!-- Modal de Adicionar Habilidade -->
       <div id="skill-modal" class="modal hidden">
         <div class="modal-content">
           <span class="close">&times;</span>

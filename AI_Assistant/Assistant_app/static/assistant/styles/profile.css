@@ -57,13 +57,11 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
   }
   
-  .skills,
-  .skill-container {
+  .skills {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     align-items: center;
-    margin-bottom: 10px;
   }
   
   .skill-tag {
@@ -76,7 +74,8 @@
     transition: background-color 0.2s;
   }
   
-  .skill-tag:hover {
+  /* Apenas tags editáveis exibem hover */
+  .skill-tag.editable:hover {
     background-color: #f8d7da;
     cursor: pointer;
   }
@@ -98,7 +97,7 @@
     font-weight: bold;
   }
   
-  .skill-tag:hover .remove-skill {
+  .skill-tag.editable:hover .remove-skill {
     display: block;
   }
   
@@ -132,9 +131,7 @@
     padding: 25px;
     border-radius: 10px;
     width: 90%;
-    max-width: 550px;
-    max-height: 80vh;
-    overflow-y: auto;
+    max-width: 600px;
     position: relative;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
   }
@@ -161,35 +158,47 @@
     border-radius: 5px;
   }
   
-  .modal-content input:disabled,
-  .modal-content select:disabled,
-  .modal-content textarea:disabled {
-    background-color: #f4f4f4;
-    color: #666;
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 10px;
   }
   
-  /* Adicionar habilidade */
+  /* Campo para adicionar nova habilidade */
   #add-skill-container {
-    display: flex;
-    gap: 10px;
-    align-items: center;
     margin-top: 10px;
   }
   
   #add-skill-container input {
-    flex: 1;
+    width: 100%;
     padding: 8px;
+    margin-bottom: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
   }
   
-  /* Modal footer */
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 20px;
+  #add-skill-container button {
+    padding: 8px 14px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #add-skill-container button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Fechar ícone no topo (se ainda existir) */
+  .close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #333;
   }
   
   /* Buttons */
@@ -219,7 +228,7 @@
     background-color: #b71c1c;
   }
   
-  .gray-btn {
+  .secondary-btn {
     padding: 8px 16px;
     background-color: #ccc;
     color: #333;
@@ -228,7 +237,7 @@
     cursor: pointer;
   }
   
-  .gray-btn:hover {
+  .secondary-btn:hover {
     background-color: #bbb;
   }
   
