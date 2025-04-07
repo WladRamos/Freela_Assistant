@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
       
         document.getElementById("work-modal-title").innerText = "Adicionar Trabalho";
         document.getElementById("delete-work").classList.add("hidden");
-        document.getElementById("save-work").style.display = "inline-block";
+        const saveBtn = document.getElementById("save-work");
+        saveBtn.classList.remove("hidden");
+        saveBtn.classList.add("show");
         document.getElementById("edit-work").style.display = "none";
         document.getElementById("add-skill-container").classList.remove("hidden");
         document.getElementById("work-modal").classList.remove("hidden");
@@ -17,7 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("close-work-modal").addEventListener("click", function () {
         limparCamposTrabalho();
         bloquearCampos();
-        document.getElementById("save-work").style.display = "none";
+        document.getElementById("save-work").classList.remove("show");
+        document.getElementById("save-work").classList.add("hidden");
         document.getElementById("edit-work").style.display = "inline-block";
         document.getElementById("add-skill-container").classList.add("hidden");
         document.getElementById("work-modal").classList.add("hidden");
@@ -49,7 +52,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
   
             bloquearCampos();
-            document.getElementById("save-work").style.display = "none";
+            const saveBtn = document.getElementById("save-work");
+            saveBtn.classList.add("hidden");
+            saveBtn.classList.remove("show");
             document.getElementById("edit-work").style.display = "inline-block";
             document.getElementById("delete-work").classList.remove("hidden");
             document.getElementById("add-skill-container").classList.add("hidden");
@@ -69,7 +74,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const addSkillContainer = document.getElementById("add-skill-container");
       
         if (saveBtn && editBtn && addSkillContainer) {
-          saveBtn.style.display = "inline-block";
+          saveBtn.classList.remove("hidden");
+          saveBtn.classList.add("show");
           editBtn.style.display = "none";
           addSkillContainer.classList.remove("hidden");
       

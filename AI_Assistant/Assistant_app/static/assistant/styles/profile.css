@@ -186,7 +186,10 @@
   
   /* Campo para adicionar nova habilidade */
   #add-skill-container {
+    display: flex;
+    flex-direction: column;
     margin-top: 10px;
+    width: 100%;
   }
   
   #add-skill-container input {
@@ -195,9 +198,11 @@
     margin-bottom: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
   }
   
   #add-skill-container button {
+    align-self: flex-start;
     padding: 8px 14px;
     background-color: #4CAF50;
     color: white;
@@ -208,7 +213,7 @@
   
   #add-skill-container button:hover {
     background-color: #45a049;
-  }
+  }  
   
   /* Fechar ícone no topo (se ainda existir) */
   .close {
@@ -260,11 +265,6 @@
     background-color: #bbb;
   }
   
-  .hidden {
-    display: none;
-  }
-  
-
   .skills-container {
     box-sizing: border-box;
     background-color: #f9f9f9;
@@ -274,4 +274,16 @@
     margin-top: 5px;
     margin-bottom: 15px;
     width: 100%;
+  }
+
+  #save-work {
+    display: none;
+  }
+  
+  #save-work.show {
+    display: inline-block;
+  }
+
+  .hidden {
+    display: none !important; 
   }
