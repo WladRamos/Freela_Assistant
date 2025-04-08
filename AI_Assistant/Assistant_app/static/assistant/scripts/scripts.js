@@ -195,6 +195,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
         if (message.trim()) {
             addMessage(message, 'message-user');
+            const welcomeMessage = document.getElementById("welcome-message");
+            welcomeMessage.style.display = "none";
 
             fetch('/api/chat_llm', {
                 method: 'POST',
