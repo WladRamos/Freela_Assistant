@@ -190,13 +190,18 @@ document.addEventListener('DOMContentLoaded', function(){
 
     // Enviar mensagem ao assistente
     function sendMessage() {
-        const message = document.getElementById('message-input').value;
+        const input = document.getElementById('message-input');
+        const sendButton = document.querySelector('.send-button');
+        const message = input.value;
         const csrftoken = getCookie('csrftoken');
 
         if (message.trim()) {
             addMessage(message, 'message-user');
             const welcomeMessage = document.getElementById("welcome-message");
             welcomeMessage.style.display = "none";
+            input.value = "";
+            input.disabled = true;
+            sendButton.disabled = true;
 
             fetch('/api/chat_llm', {
                 method: 'POST',
@@ -215,8 +220,9 @@ document.addEventListener('DOMContentLoaded', function(){
                     window.history.pushState({}, "", `/chat/${currentChatId}/`);
                     loadChatList();
                 }
-
-                document.getElementById('message-input').value = '';
+                input.disabled = false;
+                sendButton.disabled = false;
+                input.focus();
             })
             .catch(error => console.error('Erro:', error));
         }
