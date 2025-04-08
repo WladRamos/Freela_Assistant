@@ -155,6 +155,26 @@ document.addEventListener('DOMContentLoaded', function(){
     // Chamar a função ao carregar a página
     loadChatList();
 
+    // Mostrar mensagem de boas-vindas se estiver na página inicial e nenhuma conversa estiver ativa
+    if (!currentChatId) {
+        const welcomeMessage = document.getElementById("welcome-message");
+
+        // Define saudação de acordo com a hora local
+        function getGreeting() {
+            const hour = new Date().getHours();
+            if (hour < 12) return "Bom dia";
+            if (hour < 18) return "Boa tarde";
+            return "Boa noite";
+        }
+
+        // Substitui apenas o início da mensagem
+        const currentText = welcomeMessage.innerHTML;
+        const updatedText = currentText.replace(/^Bom dia/, getGreeting());
+
+        welcomeMessage.innerHTML = updatedText;
+        welcomeMessage.style.display = "block";
+    }
+
     // Se estiver em um chat específico, carregar mensagens
     if (currentChatId) {
         loadChatMessages(currentChatId);

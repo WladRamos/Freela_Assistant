@@ -268,8 +268,6 @@ textarea:disabled, .send-button:disabled {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 100vh;
-    padding-bottom: 60px; /* Evita que a última mensagem fique coberta pela input-area */
 }
 
 /* Ajusta a posição do item da lista */
@@ -343,4 +341,25 @@ textarea:disabled, .send-button:disabled {
 /* Efeito hover nos botões do dropdown */
 .chat-menu button:hover {
     background-color: #f0f0f0;
+}
+
+#welcome-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: 500;
+    padding: 25px 40px;
+    border: 1px solid #ccc;
+    background-color: #f0f0f0;
+    border-radius: 12px;
+    color: #333;
+    line-height: 1.5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+
+    /* Para igualar à .input-container */
+    max-width: 60%;
+    width: 100%;
+    margin: auto;
 }
