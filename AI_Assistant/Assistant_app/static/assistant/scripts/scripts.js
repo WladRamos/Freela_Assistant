@@ -6,6 +6,17 @@ function loadChatList() {
             const chatList = document.getElementById("chat-list");
             chatList.innerHTML = ""; // Limpa a lista antes de recarregar
 
+            const novaConversa = document.createElement("li");
+            novaConversa.classList.add("chat-item");
+            novaConversa.textContent = "Iniciar nova conversa";
+            novaConversa.style.fontWeight = "bold";
+            novaConversa.style.cursor = "pointer";
+            novaConversa.addEventListener("click", function () {
+                window.location.href = "/";
+            });
+
+            chatList.appendChild(novaConversa);
+
             data.chats.forEach(chat => {
                 let li = document.createElement("li");
                 li.classList.add("chat-item");

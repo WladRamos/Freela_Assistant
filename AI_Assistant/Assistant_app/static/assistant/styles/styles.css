@@ -313,7 +313,7 @@ textarea:disabled, .send-button:disabled {
     display: none;
     position: absolute;
     right: 10px;
-    top: 35px;
+    top: -35px;
     background: white;
     border: 1px solid #ddd;
     border-radius: 5px;
