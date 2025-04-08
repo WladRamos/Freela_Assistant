@@ -73,7 +73,6 @@ function toggleChatMenu(chatId) {
 
 // Função para renomear um chat
 function renameChat(chatId) {
-    console.log('click no botao rename')
     let newName = prompt("Digite o novo nome para o chat:");
     if (newName) {
         fetch(`/api/chat/${chatId}/rename/`, {
@@ -125,8 +124,6 @@ function deleteChat(chatId) {
 document.addEventListener('DOMContentLoaded', function(){
     let pathParts = window.location.pathname.replace(/\/$/, "").split("/");
     let currentChatId = pathParts.length > 2 && pathParts[1] === "chat" ? pathParts[2] : null;
-
-    console.log("Chat atual:", currentChatId);
 
     // Função para adicionar uma mensagem ao chat
     function addMessage(content, className) {
@@ -180,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         // Substitui apenas o início da mensagem
         const currentText = welcomeMessage.innerHTML;
-        const updatedText = currentText.replace(/^Bom dia/, getGreeting());
+        const updatedText = currentText.trim().replace(/^Bom dia/, getGreeting());
 
         welcomeMessage.innerHTML = updatedText;
         welcomeMessage.style.display = "block";
