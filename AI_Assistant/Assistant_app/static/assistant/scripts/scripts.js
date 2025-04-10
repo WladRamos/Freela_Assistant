@@ -196,25 +196,24 @@ document.addEventListener('DOMContentLoaded', function(){
         const csrftoken = getCookie('csrftoken');
     
         if (message.trim()) {
-            // Exibe a mensagem do usuário
             addMessage(message, 'message-user');
+            document.getElementById("welcome-message").style.display = "none";
     
-            const welcomeMessage = document.getElementById("welcome-message");
-            welcomeMessage.style.display = "none";
-    
-            // Limpa e desativa o input
             input.value = "";
             input.disabled = true;
             sendButton.disabled = true;
     
-            // Cria caixa para a resposta do assistente
             const messageArea = document.getElementById("message-area");
             const responseBox = document.createElement("div");
             responseBox.classList.add("message-box", "message-response");
             messageArea.appendChild(responseBox);
             messageArea.scrollTop = messageArea.scrollHeight;
     
-            let fullMarkdown = ""; // Aqui acumulamos o texto com markdown
+            // streaming-markdown setup
+            const renderer = smd.default_renderer(responseBox);
+            const parser = smd.parser(renderer);
+            let buffer = "";
+    
             fetch('/api/chat_llm', {
                 method: 'POST',
                 headers: {
@@ -222,50 +221,50 @@ document.addEventListener('DOMContentLoaded', function(){
                     'X-CSRFToken': csrftoken,
                 },
                 body: JSON.stringify({ message: message, chat_id: currentChatId })
-            }).then(response => {
+            }).then(async response => {
                 const reader = response.body.getReader();
                 const decoder = new TextDecoder();
-
-                function readChunk() {
-                    reader.read().then(({ done, value }) => {
-                        if (done) {
-                            input.disabled = false;
-                            sendButton.disabled = false;
-                            input.focus();
-
-                            if (!currentChatId && response.headers.get("X-Chat-Id")) {
-                                currentChatId = response.headers.get("X-Chat-Id");
-                                window.history.pushState({}, "", `/chat/${currentChatId}/`);
-                                loadChatList();
-                            }
-
-                            return;
+    
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) {
+                        input.disabled = false;
+                        sendButton.disabled = false;
+                        input.focus();
+    
+                        if (!currentChatId && response.headers.get("X-Chat-Id")) {
+                            currentChatId = response.headers.get("X-Chat-Id");
+                            window.history.pushState({}, "", `/chat/${currentChatId}/`);
+                            loadChatList();
                         }
-
-                        const text = decoder.decode(value, { stream: true });
-                        const lines = text.split('\n');
-
-                        lines.forEach(line => {
-                            if (line.startsWith('data: ')) {
-                                const chunk = line.replace('data: ', '');
-                                fullMarkdown += chunk;
-                                responseBox.innerHTML = DOMPurify.sanitize(marked.parse(fullMarkdown));
+    
+                        smd.parser_end(parser); // encerra e limpa parser
+                        break;
+                    }
+    
+                    if (value) {
+                        buffer += decoder.decode(value);
+                        const lines = buffer.split("\n");
+    
+                        for (let i = 0; i < lines.length - 1; i++) {
+                            const line = lines[i].trim();
+                            if (line.startsWith("data: ")) {
+                                const chunk = line.replace("data: ", "");
+                                smd.parser_write(parser, chunk);
                                 messageArea.scrollTop = messageArea.scrollHeight;
                             }
-                        });
-
-                        readChunk();
-                    });
+                        }
+    
+                        buffer = lines[lines.length - 1];
+                    }
                 }
-
-                readChunk();
             }).catch(error => {
                 console.error("Erro no streaming:", error);
                 input.disabled = false;
                 sendButton.disabled = false;
             });
         }
-    }
+    }    
 
     // Enviar mensagem ao apertar o botão de enviar
     document.querySelector('.send-button').addEventListener('click', sendMessage);
