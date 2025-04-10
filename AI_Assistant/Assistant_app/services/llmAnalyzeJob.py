@@ -97,18 +97,13 @@ Caso os trabalhos recebidos da base não tenham relação suficiente com os envi
 Escreva sua resposta em markdown.
 """
 
-def get_llm_response_analyze(user_message, user_info, context):
-    """Determina a resposta baseada na consulta do usuário e nos trabalhos similares encontrados."""
-    
+def stream_llm_response_analyze(user_message, user_info, context):
     similar_jobs = get_similar_jobs(user_message)
-    print(similar_jobs)
-
-    # Se não houver trabalhos semelhantes, já retorna essa informação
     if "Nenhum trabalho semelhante encontrado" in similar_jobs:
-        return "Não foi possível encontrar trabalhos semelhantes na base de dados. Tente reformular sua busca."
+        yield "Não foi possível encontrar trabalhos semelhantes na base de dados. Tente reformular sua busca."
+        return
 
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_message}\n\nUser info: {user_info}\n\nSimilar Jobs: {similar_jobs}"
-    print(prompt)
-    response = llm.invoke(input=prompt)
+    for chunk in llm.stream(prompt):
+        yield chunk.content
 
-    return response.content

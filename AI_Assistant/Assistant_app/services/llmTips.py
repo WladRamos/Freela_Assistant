@@ -103,23 +103,13 @@ def generate_final_answer(user_question, search_context, user_info, context):
     response = llm.invoke(input=prompt)
     return response.content
 
-def answer_user_question(user_question, user_info, context):
-    """Fluxo completo: Pergunta -> Busca Tavily -> Responde usando GPT-4o-mini"""
-    
-    # 1. Converter pergunta para inglês
+def stream_answer_user_question(user_question, user_info, context):
     question_in_english = generate_search_query(user_question, user_info)
-
-    print("Question in English: ", question_in_english)
-    
-    # 2. Fazer busca no Tavily restrita aos domínios permitidos
     search_response = search_articles_with_tavily(question_in_english)
-
-    print(search_response)
-    
-    # 3. Formatar os resultados para servir como contexto
     search_context = format_results(search_response)
-    
-    # 4. Gerar a resposta final usando GPT-4o-mini
-    final_answer = generate_final_answer(user_question, search_context, user_info, context)
-    
-    return final_answer
+
+    prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
+
+    for chunk in llm.stream(prompt):
+        yield chunk.content
+

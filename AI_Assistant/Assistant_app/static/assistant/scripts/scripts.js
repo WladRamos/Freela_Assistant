@@ -194,15 +194,27 @@ document.addEventListener('DOMContentLoaded', function(){
         const sendButton = document.querySelector('.send-button');
         const message = input.value;
         const csrftoken = getCookie('csrftoken');
-
+    
         if (message.trim()) {
+            // Exibe a mensagem do usuário
             addMessage(message, 'message-user');
+    
             const welcomeMessage = document.getElementById("welcome-message");
             welcomeMessage.style.display = "none";
+    
+            // Limpa e desativa o input
             input.value = "";
             input.disabled = true;
             sendButton.disabled = true;
-
+    
+            // Cria caixa para a resposta do assistente
+            const messageArea = document.getElementById("message-area");
+            const responseBox = document.createElement("div");
+            responseBox.classList.add("message-box", "message-response");
+            messageArea.appendChild(responseBox);
+            messageArea.scrollTop = messageArea.scrollHeight;
+    
+            let fullMarkdown = ""; // Aqui acumulamos o texto com markdown
             fetch('/api/chat_llm', {
                 method: 'POST',
                 headers: {
@@ -210,21 +222,48 @@ document.addEventListener('DOMContentLoaded', function(){
                     'X-CSRFToken': csrftoken,
                 },
                 body: JSON.stringify({ message: message, chat_id: currentChatId })
-            })
-            .then(response => response.json())
-            .then(data => {
-                addMessage(data.response, 'message-response');
+            }).then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
 
-                if (!currentChatId) {
-                    currentChatId = data.chat_id;
-                    window.history.pushState({}, "", `/chat/${currentChatId}/`);
-                    loadChatList();
+                function readChunk() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) {
+                            input.disabled = false;
+                            sendButton.disabled = false;
+                            input.focus();
+
+                            if (!currentChatId && response.headers.get("X-Chat-Id")) {
+                                currentChatId = response.headers.get("X-Chat-Id");
+                                window.history.pushState({}, "", `/chat/${currentChatId}/`);
+                                loadChatList();
+                            }
+
+                            return;
+                        }
+
+                        const text = decoder.decode(value, { stream: true });
+                        const lines = text.split('\n');
+
+                        lines.forEach(line => {
+                            if (line.startsWith('data: ')) {
+                                const chunk = line.replace('data: ', '');
+                                fullMarkdown += chunk;
+                                responseBox.innerHTML = DOMPurify.sanitize(marked.parse(fullMarkdown));
+                                messageArea.scrollTop = messageArea.scrollHeight;
+                            }
+                        });
+
+                        readChunk();
+                    });
                 }
+
+                readChunk();
+            }).catch(error => {
+                console.error("Erro no streaming:", error);
                 input.disabled = false;
                 sendButton.disabled = false;
-                input.focus();
-            })
-            .catch(error => console.error('Erro:', error));
+            });
         }
     }
 

@@ -18,10 +18,9 @@ Algumas informações sobre o usuário serão passadas junto com a pergunta, e s
 Escreva sua resposta em markdown.
 """
 
-def get_llm_response_other(user_message, user_info, context):
-    """Function to determine the response based on the user query and user personal information."""
+def stream_llm_response_other(user_message, user_info, context):
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_message}\n\nUser info: {user_info}"
-    print(prompt)
-    response = llm.invoke(input=prompt)
-    return response.content
+    for chunk in llm.stream(prompt):
+        yield chunk.content
+
     

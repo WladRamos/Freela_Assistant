@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from django.urls import reverse
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import StreamingHttpResponse, JsonResponse, HttpResponseRedirect
 from django.db import IntegrityError
 from Assistant_app.services.router import get_router_decision
 from Assistant_app.services.ClassJobFetch import JobFetcher
-from Assistant_app.services.llmSearchJobs import get_llm_response_search
-from Assistant_app.services.llmAnalyzeJob import get_llm_response_analyze
-from Assistant_app.services.llmTips import answer_user_question
-from Assistant_app.services.llmOther import get_llm_response_other
+from Assistant_app.services.llmSearchJobs import stream_llm_response_search
+from Assistant_app.services.llmAnalyzeJob import stream_llm_response_analyze
+from Assistant_app.services.llmTips import stream_answer_user_question
+from Assistant_app.services.llmOther import stream_llm_response_other
 from Assistant_app.services.llmChatTitle import generate_chat_title
 from Assistant_app.services.llmFilterMaker import get_user_info, generate_filter
 import json
@@ -129,13 +129,9 @@ def chat_llm(request):
         if not request.user.is_authenticated:
             return JsonResponse({"error": "Usuário não autenticado"}, status=403)
 
-        # Criar um novo chat se necessário
         if not chat_id:
             titulo_chat = generate_chat_title(user_message)
-            if titulo_chat:
-                chat = Chat.objects.create(usuario=request.user, nome=titulo_chat)
-            else:
-                chat = Chat.objects.create(usuario=request.user)
+            chat = Chat.objects.create(usuario=request.user, nome=titulo_chat or "Nova Conversa")
             contexto = ""
         else:
             chat = get_object_or_404(Chat, id=chat_id, usuario=request.user)
@@ -144,31 +140,47 @@ def chat_llm(request):
         mensagem = Mensagem.objects.create(chat=chat, conteudo=user_message)
 
         router_decision = get_router_decision(user_message)
-        
         user_info = get_user_info(request.user.id)
 
-        response = None
+        def event_stream():
+            full_response = ""
 
-        if router_decision == "search_jobs":
-            filters = generate_filter(user_message, user_info)
-            jobs = JobFetcher(filters)
-            jobs_str = jobs.get_jobs_str()
-            response = get_llm_response_search(user_message, jobs_str, user_info, contexto) if jobs_str else 'Não foi possível encontrar trabalhos no momento.'
-        elif router_decision == "analyze_job":
-            response = get_llm_response_analyze(user_message, user_info, contexto) or 'Não foi possível analisar o trabalho no momento.'
-        elif router_decision == "freelancing_tips":
-            response = answer_user_question(user_message, user_info, contexto) or 'Não foi possível encontrar dicas no momento.'
-        else:
-            response = get_llm_response_other(user_message, user_info, contexto)
+            def stream_and_capture(generator):
+                nonlocal full_response
+                for chunk in generator:
+                    full_response += chunk
+                    yield f"data: {chunk}\n\n"
 
-        if not response:   
-            response = "Desculpe, houve um erro ao processar a sua solicitação."
+            if router_decision == "search_jobs":
+                filters = generate_filter(user_message, user_info)
+                jobs = JobFetcher(filters)
+                jobs_str = jobs.get_jobs_str()
+                if not jobs_str:
+                    yield "data: Não foi possível encontrar trabalhos no momento.\n\n"
+                    return
+                yield from stream_and_capture(
+                    stream_llm_response_search(user_message, jobs_str, user_info, contexto)
+                )
+            elif router_decision == "analyze_job":
+                yield from stream_and_capture(
+                    stream_llm_response_analyze(user_message, user_info, contexto)
+                )
+            elif router_decision == "freelancing_tips":
+                yield from stream_and_capture(
+                    stream_answer_user_question(user_message, user_info, contexto)
+                )
+            else:
+                yield from stream_and_capture(
+                    stream_llm_response_other(user_message, user_info, contexto)
+                )
 
-        RespostaAssistente.objects.create(mensagem=mensagem, conteudo=response)
+            RespostaAssistente.objects.create(mensagem=mensagem, conteudo=full_response)
 
-        return JsonResponse({"response": response, "chat_id": chat.id})
-    else:
-        return JsonResponse({"error": "Método inválido."}, status=405)
+        response = StreamingHttpResponse(event_stream(), content_type="text/event-stream")
+        response["X-Chat-Id"] = str(chat.id)
+        return response
+
+    return JsonResponse({"error": "Método inválido."}, status=405)
     
 
 #Salvar ou Editar Trabalho
