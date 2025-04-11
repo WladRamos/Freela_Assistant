@@ -258,7 +258,6 @@ textarea:disabled, .send-button:disabled {
 /* Efeito hover nos chats */
 #chat-list li:hover {
     background-color: #e0e0e0;
-    transform: scale(1.03);
 }
 
 .main-chat {
@@ -295,7 +294,6 @@ textarea:disabled, .send-button:disabled {
 /* Evita que o hover afete a posição do dropdown */
 .chat-item:hover {
     background-color: #e0e0e0;
-    transform: scale(1.03);
     z-index: 10; /* Garante que o item com hover fique sobre os outros */
 }
 
