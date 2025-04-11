@@ -251,8 +251,11 @@ document.addEventListener('DOMContentLoaded', function(){
                             if (line.startsWith("data:")) {
                                 const chunk = line.replace("data:", "").trim();
                                 if (chunk !== "") {
+                                    console.log("🔎 Chunk recebido:", JSON.stringify(chunk));
                                     // Se for um título Markdown, adiciona quebra dupla para separar do parágrafo seguinte
                                     if (chunk.startsWith("#")) {
+                                        // Força fim do bloco anterior (ex: encerra uma <ul> antes do título)
+                                        smd.parser_write(parser, "\n\n");
                                         smd.parser_write(parser, chunk + "\n\n");
                                     } else {
                                         smd.parser_write(parser, chunk + "\n");
