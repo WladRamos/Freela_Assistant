@@ -147,9 +147,19 @@ def chat_llm(request):
 
             def stream_and_capture(generator):
                 nonlocal full_response
+                buffer = ""
+
                 for chunk in generator:
                     full_response += chunk
-                    yield f"data: {chunk}\n\n"
+                    buffer += chunk
+
+                    # Verifica se temos uma quebra de linha ou fim de sentença para emitir
+                    while "\n" in buffer:
+                        line, buffer = buffer.split("\n", 1)
+                        yield f"data: {line.strip()}\n\n"
+
+                if buffer.strip():  # envia qualquer resto que não foi enviado
+                    yield f"data: {buffer.strip()}\n\n"
 
             if router_decision == "search_jobs":
                 filters = generate_filter(user_message, user_info)

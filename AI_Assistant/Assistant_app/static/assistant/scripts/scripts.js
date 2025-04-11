@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', function(){
             messageArea.appendChild(responseBox);
             messageArea.scrollTop = messageArea.scrollHeight;
     
-            // streaming-markdown setup
+            // Setup do streaming-markdown
             const renderer = smd.default_renderer(responseBox);
             const parser = smd.parser(renderer);
             let buffer = "";
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function(){
                             loadChatList();
                         }
     
-                        smd.parser_end(parser); // encerra e limpa parser
+                        smd.parser_end(parser);
                         break;
                     }
     
@@ -248,14 +248,16 @@ document.addEventListener('DOMContentLoaded', function(){
     
                         for (let i = 0; i < lines.length - 1; i++) {
                             const line = lines[i].trim();
-                            if (line.startsWith("data: ")) {
-                                const chunk = line.replace("data: ", "");
-                                smd.parser_write(parser, chunk);
-                                messageArea.scrollTop = messageArea.scrollHeight;
+                            if (line.startsWith("data:")) {
+                                const chunk = line.replace("data:", "").trim();
+                                if (chunk !== "") {
+                                    smd.parser_write(parser, chunk + "\n");
+                                    messageArea.scrollTop = messageArea.scrollHeight;
+                                }
                             }
                         }
     
-                        buffer = lines[lines.length - 1];
+                        buffer = lines[lines.length - 1]; // guarda o que sobrou para o próximo loop
                     }
                 }
             }).catch(error => {
