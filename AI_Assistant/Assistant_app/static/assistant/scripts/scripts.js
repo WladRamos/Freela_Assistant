@@ -213,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function(){
             const renderer = smd.default_renderer(responseBox);
             const parser = smd.parser(renderer);
             let buffer = "";
+            let lastWasList = false;
     
             fetch('/api/chat_llm', {
                 method: 'POST',
@@ -252,14 +253,25 @@ document.addEventListener('DOMContentLoaded', function(){
                                 const chunk = line.replace("data:", "").trim();
                                 if (chunk !== "") {
                                     console.log("🔎 Chunk recebido:", JSON.stringify(chunk));
-                                    // Se for um título Markdown, adiciona quebra dupla para separar do parágrafo seguinte
-                                    if (chunk.startsWith("#")) {
-                                        // Força fim do bloco anterior (ex: encerra uma <ul> antes do título)
+    
+                                    const isListItem = /^[-*+] /.test(chunk) || /^\d+\./.test(chunk);
+                                    const isHeading = chunk.startsWith("#");
+                                    const isNormalParagraph = !isListItem && !isHeading;
+    
+                                    // Se saiu de uma lista para um parágrafo: força fechamento da lista
+                                    if (lastWasList && isNormalParagraph) {
+                                        smd.parser_write(parser, "\n\n");
+                                    }
+    
+                                    // Se for título, força separação dupla
+                                    if (isHeading) {
                                         smd.parser_write(parser, "\n\n");
                                         smd.parser_write(parser, chunk + "\n\n");
                                     } else {
                                         smd.parser_write(parser, chunk + "\n");
                                     }
+    
+                                    lastWasList = isListItem;
                                     messageArea.scrollTop = messageArea.scrollHeight;
                                 }
                             }
