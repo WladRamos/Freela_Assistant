@@ -361,3 +361,76 @@ textarea:disabled, .send-button:disabled {
     width: 100%;
     margin: auto;
 }
+
+
+/* Estilização específica para respostas do assistente */
+.message-response {
+    background-color: #f9f9fb;
+    border-left: 5px solid #4CAF50;
+    padding: 20px;
+    border-radius: 12px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    color: #333;
+}
+
+/* Títulos (h1 a h3) */
+.message-response h1,
+.message-response h2,
+.message-response h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #2b2b2b;
+    font-weight: 600;
+}
+
+.message-response h1 {
+    font-size: 1.5em;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.message-response h2 {
+    font-size: 1.3em;
+}
+
+.message-response h3 {
+    font-size: 1.1em;
+}
+
+/* Parágrafos */
+.message-response p {
+    margin: 10px 0;
+}
+
+/* Listas */
+.message-response ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.message-response ul li {
+    margin-bottom: 8px;
+    list-style: disc;
+}
+
+/* Links */
+.message-response a {
+    color: #007bff;
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.message-response a:hover {
+    border-bottom: 1px solid #007bff;
+    color: #0056b3;
+}
+
+/* Negrito dentro dos textos */
+.message-response strong {
+    font-weight: bold;
+    color: #1a1a1a;
+}
