@@ -251,7 +251,12 @@ document.addEventListener('DOMContentLoaded', function(){
                             if (line.startsWith("data:")) {
                                 const chunk = line.replace("data:", "").trim();
                                 if (chunk !== "") {
-                                    smd.parser_write(parser, chunk + "\n");
+                                    // Se for um título Markdown, adiciona quebra dupla para separar do parágrafo seguinte
+                                    if (chunk.startsWith("#")) {
+                                        smd.parser_write(parser, chunk + "\n\n");
+                                    } else {
+                                        smd.parser_write(parser, chunk + "\n");
+                                    }
                                     messageArea.scrollTop = messageArea.scrollHeight;
                                 }
                             }

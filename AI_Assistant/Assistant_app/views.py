@@ -153,12 +153,20 @@ def chat_llm(request):
                     full_response += chunk
                     buffer += chunk
 
-                    # Verifica se temos uma quebra de linha ou fim de sentença para emitir
                     while "\n" in buffer:
                         line, buffer = buffer.split("\n", 1)
-                        yield f"data: {line.strip()}\n\n"
+                        line = line.strip()
 
-                if buffer.strip():  # envia qualquer resto que não foi enviado
+                        if not line:
+                            continue
+
+                        if line.startswith("#"):
+                            yield f"data: {line}\n\n"
+                            yield f"data: \n\n"
+                        else:
+                            yield f"data: {line}\n\n"
+
+                if buffer.strip():
                     yield f"data: {buffer.strip()}\n\n"
 
             if router_decision == "search_jobs":
