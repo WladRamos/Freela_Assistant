@@ -147,6 +147,11 @@ document.addEventListener('DOMContentLoaded', function(){
                         addMessage(msg.resposta.conteudo, 'message-response');
                     }
                 });
+                // Foca no input após carregar o chat
+                const input = document.getElementById("message-input");
+                if (input && !input.disabled) {
+                    input.focus();
+                }
             })
             .catch(error => console.error("Erro ao carregar mensagens:", error));
     }
@@ -186,6 +191,11 @@ document.addEventListener('DOMContentLoaded', function(){
     // Se estiver em um chat específico, carregar mensagens
     if (currentChatId) {
         loadChatMessages(currentChatId);
+    }
+
+    const input = document.getElementById("message-input");
+    if (input && !input.disabled) {
+        input.focus();
     }
 
     // Enviar mensagem ao assistente

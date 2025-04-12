@@ -147,6 +147,15 @@ textarea:focus {
     background-color: #4CAF50;
     color: white;
     align-self: flex-end;
+    padding: 12px 18px;
+    border-radius: 18px 18px 4px 18px;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    max-width: 75%;
+    word-break: break-word;
+    transition: transform 0.2s ease;
 }
 
 .message-response {
@@ -370,7 +379,7 @@ textarea:disabled, .send-button:disabled {
     padding: 20px;
     border-radius: 12px;
     font-family: 'Segoe UI', sans-serif;
-    font-size: 15px;
+    font-size: 17px;
     line-height: 1.6;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
     color: #333;
