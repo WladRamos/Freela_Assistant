@@ -232,8 +232,26 @@ textarea:disabled, .send-button:disabled {
 }
 
 .sidebar ul {
-    flex-grow: 1; /* Faz com que a lista ocupe o espaço disponível */
-    overflow-y: auto; /* Adiciona rolagem caso necessário */
+    flex-grow: 1;
+    padding-right: 0;
+    margin: 0;
+}
+
+.sidebar::-webkit-scrollbar {
+    width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 
