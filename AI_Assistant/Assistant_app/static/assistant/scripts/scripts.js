@@ -198,32 +198,38 @@ document.addEventListener('DOMContentLoaded', function(){
         input.focus();
     }
 
-    // Enviar mensagem ao assistente
     function sendMessage() {
         const input = document.getElementById('message-input');
         const sendButton = document.querySelector('.send-button');
         const message = input.value;
         const csrftoken = getCookie('csrftoken');
+        const messageArea = document.getElementById("message-area");
     
         if (message.trim()) {
             addMessage(message, 'message-user');
-            document.getElementById("welcome-message").style.display = "none";
+            
+            const welcomeMessage = document.getElementById("welcome-message");
+            if (welcomeMessage) {
+                welcomeMessage.style.display = "none";
+            }
     
             input.value = "";
             input.disabled = true;
             sendButton.disabled = true;
     
-            const messageArea = document.getElementById("message-area");
+            // Cria a caixinha de resposta já com a animação de digitação
             const responseBox = document.createElement("div");
-            responseBox.classList.add("message-box", "message-response");
+            responseBox.classList.add("message-box", "message-response", "typing-indicator");
+            responseBox.innerHTML = `<span></span><span></span><span></span>`;
             messageArea.appendChild(responseBox);
             messageArea.scrollTop = messageArea.scrollHeight;
     
-            // Setup do streaming-markdown
+            // Prepara renderização com streaming-markdown
             const renderer = smd.default_renderer(responseBox);
             const parser = smd.parser(renderer);
             let buffer = "";
             let lastWasList = false;
+            let respostaIniciada = false;
     
             fetch('/api/chat_llm', {
                 method: 'POST',
@@ -262,18 +268,21 @@ document.addEventListener('DOMContentLoaded', function(){
                             if (line.startsWith("data:")) {
                                 const chunk = line.replace("data:", "").trim();
                                 if (chunk !== "") {
-                                    console.log("🔎 Chunk recebido:", JSON.stringify(chunk));
+                                    // Quando a primeira parte da resposta chegar, remove o indicador
+                                    if (!respostaIniciada) {
+                                        responseBox.classList.remove("typing-indicator");
+                                        responseBox.innerHTML = "";
+                                        respostaIniciada = true;
+                                    }
     
                                     const isListItem = /^[-*+] /.test(chunk) || /^\d+\./.test(chunk);
                                     const isHeading = chunk.startsWith("#");
                                     const isNormalParagraph = !isListItem && !isHeading;
     
-                                    // Se saiu de uma lista para um parágrafo: força fechamento da lista
                                     if (lastWasList && isNormalParagraph) {
                                         smd.parser_write(parser, "\n\n");
                                     }
     
-                                    // Se for título, força separação dupla
                                     if (isHeading) {
                                         smd.parser_write(parser, "\n\n");
                                         smd.parser_write(parser, chunk + "\n\n");
@@ -287,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function(){
                             }
                         }
     
-                        buffer = lines[lines.length - 1]; // guarda o que sobrou para o próximo loop
+                        buffer = lines[lines.length - 1];
                     }
                 }
             }).catch(error => {
@@ -296,7 +305,7 @@ document.addEventListener('DOMContentLoaded', function(){
                 sendButton.disabled = false;
             });
         }
-    }    
+    }
 
     // Enviar mensagem ao apertar o botão de enviar
     document.querySelector('.send-button').addEventListener('click', sendMessage);
