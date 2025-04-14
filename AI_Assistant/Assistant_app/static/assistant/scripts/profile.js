@@ -13,6 +13,8 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("edit-work").style.display = "none";
         document.getElementById("add-skill-container").classList.remove("hidden");
         document.getElementById("work-modal").classList.remove("hidden");
+
+        document.getElementById("work-title").focus();
       });
 
     // Botão de fechar modal de trabalho
@@ -67,6 +69,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // Editar trabalho existente
     document.getElementById("edit-work").addEventListener("click", function () {
         desbloquearCampos();
+        
+        document.getElementById("work-title").focus();
       
         // Exibir botões e input de nova habilidade
         const saveBtn = document.getElementById("save-work");
@@ -192,8 +196,10 @@ document.addEventListener("DOMContentLoaded", function () {
   
     // Abrir modal de adicionar habilidade ao perfil
     document.getElementById("add-skill").addEventListener("click", function () {
-      document.getElementById("new-skill").value = "";
+      input = document.getElementById("new-skill")
+      input.value = "";
       document.getElementById("skill-modal").classList.remove("hidden");
+      input.focus();
     });
   
     // Adicionar habilidade ao perfil
