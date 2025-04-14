@@ -218,6 +218,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(response => response.json())
         .then(data => {
           if (data.success) {
+            if (!data.nova) {
+              alert("Essa habilidade já está no seu perfil.");
+              return;
+            }
             const skillsContainer = document.querySelector(".profile-box.skills .skills");
             let noSkillsMessage = skillsContainer.querySelector("p");
             if (noSkillsMessage) noSkillsMessage.remove();

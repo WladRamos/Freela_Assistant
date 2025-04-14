@@ -298,9 +298,13 @@ def adicionar_habilidade(request):
 
         skill_name = Habilidade.normalizar_nome(data["nome"])
         habilidade, _ = Habilidade.objects.get_or_create(nome=skill_name)
-        UsuarioHabilidade.objects.get_or_create(usuario=user, habilidade=habilidade)
+        habilidade, _ = Habilidade.objects.get_or_create(nome=skill_name)
+        _, criada = UsuarioHabilidade.objects.get_or_create(usuario=user, habilidade=habilidade)
 
-        return JsonResponse({"success": True, "habilidade_id": habilidade.id})
+        return JsonResponse({"success": True, 
+                             "habilidade_id": habilidade.id,
+                             "nova": criada
+                             })
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=400)
