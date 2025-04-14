@@ -241,7 +241,7 @@ def salvar_trabalho(request):
                 habilidade, created = Habilidade.objects.get_or_create(nome=nome_habilidade.upper())
 
                 # Criar a relação entre o trabalho e a habilidade
-                ProjetoHabilidade.objects.create(projeto=projeto, habilidade=habilidade)
+                ProjetoHabilidade.objects.get_or_create(projeto=projeto, habilidade=habilidade)
 
         return JsonResponse({"success": True, "id": projeto.id})
 

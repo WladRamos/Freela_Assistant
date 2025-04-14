@@ -1,3 +1,11 @@
+function normalizarNome(nome) {
+  return nome
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase()
+    .trim();
+}
+
 document.addEventListener("DOMContentLoaded", function () {
 
     // Abrir modal para adicionar novo trabalho
@@ -151,14 +159,29 @@ document.addEventListener("DOMContentLoaded", function () {
   
     // Adicionar nova habilidade
     document.getElementById("add-work-skill").addEventListener("click", function () {
-      const newSkill = document.getElementById("new-work-skill").value.trim().toUpperCase();
-      if (newSkill) {
-        const tag = document.createElement("span");
-        tag.className = "skill-tag editable";
-        tag.innerHTML = `${newSkill} <span class="remove-skill">x</span>`;
-        document.getElementById("work-skills").appendChild(tag);
-        document.getElementById("new-work-skill").value = "";
+      const input = document.getElementById("new-work-skill");
+      const rawSkill = input.value;
+      const newSkill = normalizarNome(rawSkill);
+    
+      if (!newSkill) return;
+    
+      // Verifica se já foi adicionada ao trabalho
+      const jaAdicionada = Array.from(document.querySelectorAll("#work-skills .skill-tag")).some(tag => {
+        const nomeTag = normalizarNome(tag.textContent.replace(" x", ""));
+        return nomeTag === newSkill;
+      });
+    
+      if (jaAdicionada) {
+        alert("Essa habilidade já foi adicionada ao trabalho.");
+        return;
       }
+    
+      // Cria tag visual
+      const tag = document.createElement("span");
+      tag.className = "skill-tag editable";
+      tag.innerHTML = `${newSkill} <span class="remove-skill">x</span>`;
+      document.getElementById("work-skills").appendChild(tag);
+      input.value = "";
     });
   
     // Remover habilidade ao clicar no "x"
