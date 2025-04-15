@@ -1,3 +1,11 @@
+function scrollToBottomSmooth() {
+    const messageArea = document.getElementById("message-area");
+    messageArea.scrollTo({
+        top: messageArea.scrollHeight,
+        behavior: "smooth"
+    });
+}
+
 function aplicarTargetBlankNosLinks(container) {
     const links = container.querySelectorAll("a");
     links.forEach(link => {
@@ -309,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function(){
                                     }, 10);
     
                                     lastWasList = isListItem;
-                                    messageArea.scrollTop = messageArea.scrollHeight;
+                                    scrollToBottomSmooth();
                                 }
                             }
                         }
