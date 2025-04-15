@@ -36,10 +36,15 @@
 }
 
 /* Campos do formulário */
-.form-group {
-    margin-bottom: 15px;
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box; /* Adicionado */
+    margin-bottom: 10px;
 }
-
 .form-group input {
     width: 100%;
     padding: 10px;
@@ -52,12 +57,14 @@
 .btn-primary {
     background-color: #4CAF50;
     color: white;
-    padding: 10px 15px;
+    padding: 10px; /* Padronize com os inputs */
     border: none;
     border-radius: 5px;
     width: 100%;
     cursor: pointer;
     font-size: 16px;
+    box-sizing: border-box; /* Adicionado */
+    margin-bottom: 20px;
 }
 
 .btn-primary:hover {
