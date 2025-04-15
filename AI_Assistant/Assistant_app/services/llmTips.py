@@ -60,8 +60,8 @@ def search_articles_with_tavily(question_in_english):
     """Usa Tavily para buscar artigos apenas nos sites permitidos."""
     
     response = tavily_client.search(
-        query=question_in_english,
-        include_answer=True,
+        query=question_in_english
+        #include_answer=True
         #include_domains=ALLOWED_DOMAINS
     )
 
@@ -92,7 +92,8 @@ def format_results(search_response):
 system = """Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
 Um conjunto de informações do usuário será passado junto com a pergunta, e você pode usá-las caso necessário.
 Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação.
-Ao final da sua resposta, coloque as fontes (links) que você utilizou para responder a pergunta, caso eles existam."""
+Ao final da sua resposta, coloque as fontes (links) que você utilizou para responder a pergunta, caso eles existam.
+Inclua as fontes apenas se elas existirem."""
 
 def generate_final_answer(user_question, search_context, user_info, context):
     """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""
@@ -106,6 +107,7 @@ def generate_final_answer(user_question, search_context, user_info, context):
 def stream_answer_user_question(user_question, user_info, context):
     question_in_english = generate_search_query(user_question, user_info)
     search_response = search_articles_with_tavily(question_in_english)
+    print(search_response)
     search_context = format_results(search_response)
 
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
