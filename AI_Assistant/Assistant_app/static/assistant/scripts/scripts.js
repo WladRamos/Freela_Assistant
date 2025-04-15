@@ -292,13 +292,21 @@ document.addEventListener('DOMContentLoaded', function(){
                                     if (lastWasList && isNormalParagraph) {
                                         smd.parser_write(parser, "\n\n");
                                     }
-    
+                                    
                                     if (isHeading) {
                                         smd.parser_write(parser, "\n\n");
                                         smd.parser_write(parser, chunk + "\n\n");
                                     } else {
                                         smd.parser_write(parser, chunk + "\n");
                                     }
+                                    
+                                    // Aplica efeito de fade-in ao último elemento renderizado (independente do tipo)
+                                    setTimeout(() => {
+                                        const lastChild = responseBox.lastElementChild;
+                                        if (lastChild && !lastChild.classList.contains('fade-in-chunk')) {
+                                            lastChild.classList.add('fade-in-chunk');
+                                        }
+                                    }, 10);
     
                                     lastWasList = isListItem;
                                     messageArea.scrollTop = messageArea.scrollHeight;
