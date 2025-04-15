@@ -65,7 +65,8 @@ def search_articles_with_tavily(question_in_english):
     
     response = tavily_client.search(
         query=question_in_english,
-        include_answer='advanced'
+        include_answer='advanced',
+        search_depth='advanced'
     )
 
     return response

@@ -19,6 +19,7 @@ Escreva sua resposta em markdown.
 """
 
 def stream_llm_response_search(user_message, jobs_found, user_info, context):
+    print(jobs_found)
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_message}\n\nUser info: {user_info}\n\nJobs found: {jobs_found}"
     for chunk in llm.stream(prompt):
         yield chunk.content
