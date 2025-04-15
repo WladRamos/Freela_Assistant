@@ -62,7 +62,7 @@ def search_articles_with_tavily(question_in_english):
     response = tavily_client.search(
         query=question_in_english,
         include_answer=True,
-        include_domains=ALLOWED_DOMAINS
+        #include_domains=ALLOWED_DOMAINS
     )
 
     return response
@@ -92,7 +92,7 @@ def format_results(search_response):
 system = """Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
 Um conjunto de informações do usuário será passado junto com a pergunta, e você pode usá-las caso necessário.
 Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação.
-Ao final da sua resposta, coloque as fontes que você utilizou para responder a pergunta."""
+Ao final da sua resposta, coloque as fontes (links) que você utilizou para responder a pergunta, caso eles existam."""
 
 def generate_final_answer(user_question, search_context, user_info, context):
     """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""

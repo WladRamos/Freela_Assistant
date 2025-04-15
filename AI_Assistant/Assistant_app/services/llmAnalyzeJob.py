@@ -94,6 +94,7 @@ Com base nas informações do(s) trabalho(s) enviado(s) pelo usuário, faça uma
 Sua análise deve ser feita com o objetivo de responder a pergunta do usuário com relação ao trabalho enviado.
 A solicitação do usuário pode ter relação com suas informações pessoais, como trabalhos do seu histórico, habilidades, etc. Você receberá essas informações junto ao pedido do usuário.
 Caso os trabalhos recebidos da base não tenham relação suficiente com os enviados pelo usuário, informe que não foi possível encontrar trabalhos semelhantes.
+Não cite os trabalhos semelhantes na resposta. Use-os apenas para fornecer sua análise e recomendações de forma embasada.
 Escreva sua resposta em markdown.
 """
 

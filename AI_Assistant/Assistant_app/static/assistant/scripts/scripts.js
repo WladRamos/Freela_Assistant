@@ -1,3 +1,11 @@
+function aplicarTargetBlankNosLinks(container) {
+    const links = container.querySelectorAll("a");
+    links.forEach(link => {
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+    });
+}
+
 // Função para carregar os chats na barra lateral
 function loadChatList() {
     fetch('/api/chats/')
@@ -131,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function(){
         const messageBox = document.createElement('div');
         messageBox.classList.add('message-box', className);
         messageBox.innerHTML = DOMPurify.sanitize(marked.parse(content));
+        aplicarTargetBlankNosLinks(messageBox);
         messageArea.appendChild(messageBox);
         setTimeout(() => { messageArea.scrollTop = messageArea.scrollHeight; }, 0);
     }
@@ -256,6 +265,7 @@ document.addEventListener('DOMContentLoaded', function(){
                         }
     
                         smd.parser_end(parser);
+                        aplicarTargetBlankNosLinks(responseBox);
                         break;
                     }
     
