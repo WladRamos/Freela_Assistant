@@ -12,7 +12,7 @@ load_dotenv(env_file)
 gpt_key = os.getenv('OPENAI_API_KEY')
 
 # Inicializar LLM
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, api_key=gpt_key)
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, api_key=gpt_key)
 
 def extract_title(response):
     """Extrai o título do trabalho gerado pelo LLM corretamente."""

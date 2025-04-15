@@ -140,6 +140,7 @@ def chat_llm(request):
         mensagem = Mensagem.objects.create(chat=chat, conteudo=user_message)
 
         router_decision = get_router_decision(user_message)
+        print(f"Router decision: {router_decision}")
         user_info = get_user_info(request.user.id)
 
         def event_stream():
