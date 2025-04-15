@@ -36,6 +36,7 @@ def generate_search_query(user_question, user_info):
         que será usada para buscar artigos sobre o assunto. A frase gerada não precisa ser uma tradução literal, 
         mas deve capturar a intenção principal da pergunta.
         Um conjunto de informações do usuário serão passadas junto com a pergunta, e você pode usá-las para gerar a frase que será usada na busca, caso faça sentido.
+        Apenas use as informações do usuário se a pergunta fizer referência a elas.
 
         Exemplos:
         - Pergunta: "Boa noite, gostaria de entender melhor como funcionam os frameworks, para que servem, etc. Pois estou tendo dúvidas para iniciar o meu projeto."
@@ -60,8 +61,9 @@ def search_articles_with_tavily(question_in_english):
     """Usa Tavily para buscar artigos apenas nos sites permitidos."""
     
     response = tavily_client.search(
-        query=question_in_english
-        #include_answer=True
+        query=question_in_english,
+        search_depth='advanced',
+        include_answer='advanced'
         #include_domains=ALLOWED_DOMAINS
     )
 
