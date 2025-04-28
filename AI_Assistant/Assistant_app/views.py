@@ -172,6 +172,7 @@ def chat_llm(request):
 
             if router_decision == "search_jobs":
                 filters = generate_filter(user_message, user_info)
+                print("Filtros gerados:", filters)
                 jobs = JobFetcher(filters)
                 jobs_str = jobs.get_jobs_str()
                 if not jobs_str:
