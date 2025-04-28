@@ -37,7 +37,7 @@ class Freelancercom:
                 
                 project_info = {
                     'title': project.get("title"),
-                    'link': f"https://www.freelancer.com/projects/{project.get("seo_url")}/details",
+                    'link': f"https://www.freelancer.com/projects/{project.get('seo_url')}/details",
                     'description': project.get("preview_description"),
                     'job_type': project.get("type"),
                     'budget_minimum': project.get("budget").get("minimum"),
