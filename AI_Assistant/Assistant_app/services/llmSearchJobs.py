@@ -13,7 +13,7 @@ Com base no pedido do usuário, nas suas informações pessoais e nos trabalhos 
 Liste na resposta apenas os trabalhos que fazem sentido com o pedido do usuário.
 Deixe sempre claro qual é o site que o trabalho pertence.
 Tente sempre citar o motivo pelo qual você está sugerindo aquele trabalho.
-fique atento a moeda que o orçamento do trabalho esta especificado. Sempre que possível, faça a conversão para a dolár.
+fique atento a moeda que o orçamento do trabalho esta especificado. Sempre que possível, faça a conversão para dolár, e sempre utilize os simbolos internacionais de moeda. Por exemplo real (R$), euro (€), dólar (US$), etc.
 Sempre mostre todas as informações disponiveis sobre orçamento do trabalho, incluindo preço mínimo e preço máximo sempre que estiverem disponíveis.
 Escreva sua resposta em markdown.
 """

@@ -103,6 +103,7 @@ def stream_llm_response_analyze(user_message, user_info, context):
     if "Nenhum trabalho semelhante encontrado" in similar_jobs:
         yield "Não foi possível encontrar trabalhos semelhantes na base de dados. Tente reformular sua busca."
         return
+    print(f"Similar jobs: {similar_jobs}")
 
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_message}\n\nUser info: {user_info}\n\nSimilar Jobs: {similar_jobs}"
     for chunk in llm.stream(prompt):

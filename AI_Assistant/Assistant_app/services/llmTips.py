@@ -95,7 +95,7 @@ def format_results(search_response):
 
 system = """Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
 Um conjunto de informações do usuário será passado junto com a pergunta, e você pode usá-las caso necessário.
-Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação.
+Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação. Não utilize outras formas de formatação, como HTML ou LaTeX.
 Caso existam links relevantes no Search context, inclua-os no final da resposta, numa seção 'Fontes'."""
 
 def generate_final_answer(user_question, search_context, user_info, context):
