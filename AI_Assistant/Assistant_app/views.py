@@ -124,6 +124,7 @@ def chat_llm(request):
     if request.method == "POST":
         data = json.loads(request.body)
         user_message = data.get('message')
+        print("Solicitação do usuário: ", user_message)
         chat_id = data.get('chat_id')
 
         if not request.user.is_authenticated:

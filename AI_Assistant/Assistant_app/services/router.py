@@ -22,7 +22,7 @@ structured_llm = llm.with_structured_output(ActionRoute)
 system = """You are a smart assistant specifically designed to help freelance programmers. Based on the user query, determine the correct action:
 - If the user is looking to find jobs on freelance platforms, route to 'search_jobs'.
 - If the user is asking for an analysis of specific job characteristics, route to 'analyze_job'.
-- If the user is seeking general tips about the digital freelancing world, route to 'freelancing_tips'.
+- If the user is looking for tips, information or research on the internet about the world of digital freelancing, route to 'freelancing_tips'.
 - For anything else, route to 'other'.
 """
 prompt = ChatPromptTemplate.from_messages(
