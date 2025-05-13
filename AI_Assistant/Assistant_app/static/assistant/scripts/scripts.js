@@ -317,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function(){
                                     }, 10);
     
                                     lastWasList = isListItem;
-                                    scrollToBottomSmooth();
+                                    //scrollToBottomSmooth();
                                 }
                             }
                         }
