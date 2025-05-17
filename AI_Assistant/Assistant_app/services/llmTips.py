@@ -32,8 +32,8 @@ def generate_search_query(user_question, user_info):
     """Gera uma frase em inglês otimizada para a busca."""
     
     prompt_search_query = ChatPromptTemplate.from_messages([
-        ("system", """Você receberá uma pergunta de um usuário e deverá gerar uma frase curta e clara em inglês 
-        que será usada para buscar artigos sobre o assunto. A frase gerada não precisa ser uma tradução literal, 
+        ("system", """Você receberá uma pergunta de um usuário e deverá gerar uma search query clara em inglês 
+        que será usada para buscar informações sobre o assunto na internet. A frase gerada não precisa ser uma tradução literal, 
         mas deve capturar a intenção principal da pergunta.
         Um conjunto de informações do usuário serão passadas junto com a pergunta, e você pode usá-las para gerar a frase que será usada na busca, caso faça sentido.
         Apenas use as informações do usuário se a pergunta fizer referência a elas.
@@ -58,6 +58,7 @@ def generate_search_query(user_question, user_info):
 
     query = chain_search_query.invoke({"question": user_question, "user_info": user_info}).content.strip()
     query = query.strip('"').strip("'")
+    print("Query gerada:", query)
     return query
 
 def search_articles_with_tavily(question_in_english):
@@ -65,8 +66,8 @@ def search_articles_with_tavily(question_in_english):
     
     response = tavily_client.search(
         query=question_in_english,
-        include_answer='advanced',
-        search_depth='advanced'
+        search_depth='advanced',
+        time_range='year',
     )
 
     return response
@@ -77,14 +78,14 @@ def format_results(search_response):
     if not search_response:
         return "Não encontrei informações relevantes"
 
-    context = "### Resumo da Pesquisa\n"
+    #context = "### Resumo da Pesquisa\n"
 
     # 🔹 Se houver uma resposta direta do Tavily, usá-la
-    if "answer" in search_response and search_response["answer"]:
-        context += f"**{search_response['answer']}**\n\n"
+    #if "answer" in search_response and search_response["answer"]:
+    #    context += f"**{search_response['answer']}**\n\n"
 
     # 🔹 Listar os artigos encontrados
-    context += "### Artigos relacionados:\n"
+    context = "### Informações coletadas na internet:\n"
     for result in search_response.get("results", []):
         title = result.get("title", "Título não disponível")
         url = result.get("url", "#")
@@ -93,27 +94,36 @@ def format_results(search_response):
 
     return context
 
-system = """Baseado nos seguintes trechos de artigos e informações coletadas, responda à pergunta do usuário.
-Um conjunto de informações do usuário será passado junto com a pergunta, e você pode usá-las caso necessário.
-Escreva sua resposta de forma clara e objetiva, utilizando markdown para formatação. Não utilize outras formas de formatação, como HTML ou LaTeX.
-Caso existam links relevantes no Search context, inclua-os no final da resposta, numa seção 'Fontes'."""
+system = """Você é um assistente inteligente especializado em ajudar freelancers da área de TI e programação.
 
-def generate_final_answer(user_question, search_context, user_info, context):
-    """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""
+Sua tarefa é responder de forma clara, objetiva e útil com base nas **informações coletadas na internet** por meio de uma busca automatizada.
+
+Junto com a pergunta do usuário, você também receberá **informações adicionais sobre o próprio usuário**. Use essas informações para personalizar ou contextualizar melhor sua resposta, se for útil.
+
+- A resposta deve ser **escrita em linguagem natural**, com foco em clareza e utilidade.
+- Utilize **formatação Markdown** (como listas, títulos, negrito, etc.) para facilitar a leitura.
+- **Não utilize HTML, LaTeX ou outras formas de formatação.**
+- Caso existam links relevantes no contexto da busca, adicione-os no final da resposta sob o título **Fontes**.
+
+Se a resposta envolver julgamento, recomendação ou análise, considere o ponto de vista de um freelancer que busca boas oportunidades, eficiência e equilíbrio entre esforço e retorno.
+"""
+
+# def generate_final_answer(user_question, search_context, user_info, context):
+#     """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""
     
-    prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
-    print(prompt)
+#     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
+#     print(prompt)
 
-    response = llm.invoke(input=prompt)
-    return response.content
+#     response = llm.invoke(input=prompt)
+#     return response.content
 
 def stream_answer_user_question(user_question, user_info, context):
     question_in_english = generate_search_query(user_question, user_info)
     search_response = search_articles_with_tavily(question_in_english)
     search_context = format_results(search_response)
-    print(search_context)
 
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
+    print(prompt)
 
     for chunk in llm.stream(prompt):
         yield chunk.content
