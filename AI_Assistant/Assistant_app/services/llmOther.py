@@ -1,6 +1,7 @@
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv, find_dotenv
 import os
+from Assistant_app.services.llmReviewer import stream_reviewed_answer
 
 env_file = find_dotenv()
 load_dotenv(env_file)
@@ -19,8 +20,26 @@ Escreva sua resposta em markdown.
 """
 
 def stream_llm_response_other(user_message, user_info, context):
+
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_message}\n\nUser info: {user_info}"
-    for chunk in llm.stream(prompt):
-        yield chunk.content
+
+    print("----------------------------------------")
+    print("Prompt:", prompt)
+    print("----------------------------------------")
+
+    original_response = llm.invoke(prompt).content
+
+    print("----------------------------------------")
+    print("Resposta original:", original_response)
+    print("----------------------------------------")
+
+    for chunk in stream_reviewed_answer(
+        user_question=user_message,
+        user_info=user_info,
+        context=context,
+        extra_context=None,
+        original_answer=original_response
+    ):
+        yield chunk
 
     

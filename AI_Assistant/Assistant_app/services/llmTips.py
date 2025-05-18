@@ -22,13 +22,6 @@ tavily_client = TavilyClient(api_key=tavily_key)
 gpt_key = os.getenv('OPENAI_API_KEY')
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0.1, api_key=gpt_key)
 
-# Lista de sites permitidos para busca no Tavily
-ALLOWED_DOMAINS = [
-    "https://www.upwork.com/resources",
-    "https://www.freelancer.com/articles",
-    "https://www.guru.com/blog/"
-]
-
 def generate_search_query(user_question, user_info):
     """Gera uma frase em inglês otimizada para a busca."""
     
@@ -79,12 +72,6 @@ def format_results(search_response):
     if not search_response:
         return "Não encontrei informações relevantes"
 
-    #context = "### Resumo da Pesquisa\n"
-
-    # 🔹 Se houver uma resposta direta do Tavily, usá-la
-    #if "answer" in search_response and search_response["answer"]:
-    #    context += f"**{search_response['answer']}**\n\n"
-
     # 🔹 Listar os artigos encontrados
     context = "### Informações coletadas na internet:\n"
     for result in search_response.get("results", []):
@@ -109,24 +96,20 @@ Junto com a pergunta do usuário, você também receberá **informações adicio
 Se a resposta envolver julgamento, recomendação ou análise, considere o ponto de vista de um freelancer que busca boas oportunidades, eficiência e equilíbrio entre esforço e retorno.
 """
 
-# def generate_final_answer(user_question, search_context, user_info, context):
-#     """Usa GPT-4o-mini para gerar a resposta final com base nas informações do Tavily."""
-    
-#     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
-#     print(prompt)
-
-#     response = llm.invoke(input=prompt)
-#     return response.content
-
 def stream_answer_user_question(user_question, user_info, context):
     question_in_english = generate_search_query(user_question, user_info)
     search_response = search_articles_with_tavily(question_in_english)
     search_context = format_results(search_response)
 
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
-    print(prompt)
+    
+    print("----------------------------------------")
+    print("Prompt:", prompt)
+    print("----------------------------------------")
 
     original_response = llm.invoke(prompt).content
+
+    print("----------------------------------------")
     print("Resposta original:", original_response)
     print("----------------------------------------")
 

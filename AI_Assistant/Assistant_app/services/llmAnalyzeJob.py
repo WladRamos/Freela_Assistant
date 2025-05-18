@@ -5,6 +5,7 @@ import chromadb
 import re
 from langchain_core.prompts import ChatPromptTemplate
 from pathlib import Path
+from Assistant_app.services.llmReviewer import stream_reviewed_answer
 
 # Carregar variáveis de ambiente
 env_file = find_dotenv()
@@ -83,7 +84,8 @@ def get_similar_jobs(user_input):
             return "Nenhum trabalho semelhante encontrado na base de dados."
 
         # Formatar os trabalhos encontrados
-        trabalhos_formatados = "\n".join([format_job_info(trab) for trab in trabalhos_encontrados])
+        trabalhos_formatados = "#### Trabalhos similares encontrados:\n"
+        trabalhos_formatados += "\n".join([format_job_info(trab) for trab in trabalhos_encontrados])
 
         return trabalhos_formatados
     except Exception as e:
@@ -103,9 +105,26 @@ def stream_llm_response_analyze(user_message, user_info, context):
     if "Nenhum trabalho semelhante encontrado" in similar_jobs:
         yield "Não foi possível encontrar trabalhos semelhantes na base de dados. Tente reformular sua busca."
         return
-    print(f"Similar jobs: {similar_jobs}")
 
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_message}\n\nUser info: {user_info}\n\nSimilar Jobs: {similar_jobs}"
-    for chunk in llm.stream(prompt):
-        yield chunk.content
+
+    print("----------------------------------------")
+    print("Prompt:", prompt)
+    print("----------------------------------------")
+
+    original_response = llm.invoke(prompt).content
+
+    print("----------------------------------------")
+    print("Resposta original:", original_response)
+    print("----------------------------------------")
+
+
+    for chunk in stream_reviewed_answer(
+        user_question=user_message,
+        user_info=user_info,
+        context=context,
+        extra_context=similar_jobs,
+        original_answer=original_response
+    ):
+        yield chunk
 

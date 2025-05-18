@@ -7,7 +7,7 @@ import re
 
 class JobFetcher:
     def __init__(self, filters: list[str] = []) -> None:
-        self.__all_jobs_str = ""
+        self.__all_jobs_str = "###Trabalhos encontrados em plataformas freelancer\n"
         self.filters = filters
         self.__fetch_jobs()
         
@@ -124,7 +124,3 @@ class JobFetcher:
     
     def get_jobs_str(self):
         return self.__all_jobs_str
-
-if __name__ == "__main__":
-    jobs = JobFetcher(filters=["python", "developer"])
-    print(jobs.get_jobs_str())
