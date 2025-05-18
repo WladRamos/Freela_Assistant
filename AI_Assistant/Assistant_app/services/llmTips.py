@@ -4,6 +4,7 @@ from tavily import TavilyClient
 from dotenv import load_dotenv, find_dotenv
 import os
 import getpass
+from Assistant_app.services.llmReviewer import stream_reviewed_answer
 
 # Carregar variáveis de ambiente
 env_file = find_dotenv()
@@ -125,5 +126,15 @@ def stream_answer_user_question(user_question, user_info, context):
     prompt = f"System: {system}\n\n {context} \n\nHuman: {user_question}\n\nUser info: {user_info}\n\nSearch context: {search_context}"
     print(prompt)
 
-    for chunk in llm.stream(prompt):
-        yield chunk.content
+    original_response = llm.invoke(prompt).content
+    print("Resposta original:", original_response)
+    print("----------------------------------------")
+
+    for chunk in stream_reviewed_answer(
+        user_question=user_question,
+        user_info=user_info,
+        context=context,
+        extra_context=search_context,
+        original_answer=original_response
+    ):
+        yield chunk
