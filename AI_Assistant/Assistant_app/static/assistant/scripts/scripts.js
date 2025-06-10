@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function(){
             }
     
             input.value = "";
+            adjustTextarea();
             input.disabled = true;
             sendButton.disabled = true;
     
